@@ -1,0 +1,9 @@
+{
+  "_comment": "Ganti file ini dengan file hasil klik tombol 'Export Vercel Seed (initial_workspace.json)' dari aplikasi Dework Space jika ingin semua device baru otomatis memuat data Anda saat membuka link Vercel.",
+  "meta": {
+    "app": "Dework Space - Multi-Brand Content Analytics & Team Hub",
+    "multiBrandVersion": 4,
+    "isCloudSeed": true
+  },
+  "brandsStore": null
+}

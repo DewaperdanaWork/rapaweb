@@ -1,0 +1,43 @@
+/* Dework Space - Custom Styles & Print PDF Engine */
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .hidden-tab { display: none !important; }
+    .sortable-ghost { opacity: 0.4; background-color: #f8fafc; border: 2px dashed #cbd5e1; }
+    .dark .sortable-ghost { background-color: #1e293b; border-color: #475569; }
+    
+    select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); background-repeat: no-repeat; background-position-x: 100%; background-position-y: 50%; padding-right: 25px; }
+    .dark select { background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>"); }
+
+    @media print {
+      body { background: white !important; color: #0f172a !important; }
+      body * { visibility: hidden !important; }
+      #printable-report-area, #printable-report-area * { visibility: visible !important; }
+      #modal-executive-report {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+      }
+      #printable-report-area {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: white !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .no-print { display: none !important; }
+    }

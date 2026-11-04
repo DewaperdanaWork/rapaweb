@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dework Space - Content Analytics & Team Hub 2026</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: {} } }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DeworkSpace">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/favicon.svg">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans antialiased flex h-screen overflow-hidden transition-colors duration-300">
+
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Mobile Header -->
+  <div class="md:hidden bg-slate-900 dark:bg-slate-950 text-white border-b border-slate-800 p-4 flex justify-between items-center fixed w-full z-30 shadow-md">
+    <div class="flex items-center gap-2.5">
+      <div class="font-bold text-xl tracking-wide">Dework<span class="text-blue-500">Space</span></div>
+      <span id="mobile-active-brand-pill" onclick="cycleActiveBrand()" class="cursor-pointer text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-600/30 text-blue-300 border border-blue-500/40">Brand 1</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <button onclick="openBrandSettingsModal()" class="text-slate-300 hover:text-white" title="Pengaturan Brand"><i class="fa-solid fa-sliders"></i></button>
+      <button onclick="toggleDarkMode()" class="text-slate-300 hover:text-white"><i class="fa-solid fa-moon"></i></button>
+      <button onclick="toggleSidebar()" class="text-slate-300 hover:text-white"><i class="fa-solid fa-bars text-xl"></i></button>
+    </div>
+  </div>
+
+  <!-- Sidebar Backdrop for Mobile -->
+  <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden transition-opacity opacity-0 backdrop-blur-sm"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-slate-900 dark:bg-slate-950 text-white flex flex-col shadow-xl transform transition-transform duration-300 -translate-x-full md:translate-x-0 pt-16 md:pt-0">
+    <div class="p-5 hidden md:flex justify-between border-b border-slate-800 items-center">
+      <div>
+        <div class="font-bold text-2xl tracking-wide">Dework<span class="text-blue-500">Space</span></div>
+        <p class="text-[11px] text-emerald-400 mt-1 uppercase tracking-wider flex items-center font-semibold" id="storage-status-badge">
+          <i class="fa-solid fa-database mr-1.5 text-xs"></i> IndexedDB Active
+        </p>
+      </div>
+      <button onclick="toggleDarkMode()" class="text-slate-400 hover:text-white transition-colors" title="Toggle Dark Mode">
+        <i class="fa-solid fa-moon text-lg" id="dark-icon"></i>
+      </button>
+    </div>
+
+    <!-- MULTI-BRAND SWITCHER HUB -->
+    <div class="p-3.5 border-b border-slate-800 bg-slate-950/70">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-building-flag text-blue-400"></i> Multi-Brand Switcher
+        </span>
+        <button onclick="openBrandSettingsModal()" class="text-[10px] font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition" title="Ubah Nama & Handle Brand">
+          <i class="fa-solid fa-pen-to-square"></i> Edit Brand
+        </button>
+      </div>
+      <div class="space-y-1.5" id="sidebar-brand-buttons">
+        <button onclick="switchBrand('brand_1')" id="btn-brand-brand_1" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition bg-blue-600 text-white shadow-sm border border-blue-500">
+          <div class="flex items-center gap-2 truncate">
+            <span class="w-2 h-2 rounded-full bg-white shrink-0"></span>
+            <span class="truncate" id="sidebar-name-brand_1">RAPAtech</span>
+          </div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-black/20 font-mono shrink-0" id="sidebar-badge-brand_1">Brand 1</span>
+        </button>
+        <button onclick="switchBrand('brand_2')" id="btn-brand-brand_2" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800">
+          <div class="flex items-center gap-2 truncate">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+            <span class="truncate" id="sidebar-name-brand_2">MONTRA</span>
+          </div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono shrink-0" id="sidebar-badge-brand_2">Brand 2</span>
+        </button>
+        <button onclick="switchBrand('all')" id="btn-brand-all" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold transition bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800" title="Akumulasi & Perbandingan Head-to-Head Brand 1 + Brand 2">
+          <div class="flex items-center gap-2 truncate">
+            <i class="fa-solid fa-layer-group text-amber-400 text-[11px] shrink-0"></i>
+            <span class="truncate">Holding (Semua Brand)</span>
+          </div>
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold shrink-0">2 Brand</span>
+        </button>
+      </div>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+      <button onclick="switchTab('overview')" data-tab="overview" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors bg-blue-600 text-white shadow-md"><i class="fa-solid fa-table-columns w-5 text-center text-lg"></i><span class="font-medium">Overview</span></button>
+      <button onclick="switchTab('vc-summary')" data-tab="vc-summary" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-slate-400 hover:bg-slate-800 hover:text-white"><i class="fa-solid fa-layer-group w-5 text-center text-lg"></i><span class="font-medium text-left">Video & Carousel Summary</span></button>
+      <button onclick="switchTab('compare')" data-tab="compare" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-slate-400 hover:bg-slate-800 hover:text-white"><i class="fa-solid fa-code-compare w-5 text-center text-lg"></i><span class="font-medium flex-1 text-left">MoM & Compare</span><span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">MoM %</span></button>
+      <button onclick="switchTab('analytics')" data-tab="analytics" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-slate-400 hover:bg-slate-800 hover:text-white"><i class="fa-solid fa-chart-pie w-5 text-center text-lg"></i><span class="font-medium">Data Analytics</span></button>
+      <button onclick="switchTab('products')" data-tab="products" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-slate-400 hover:bg-slate-800 hover:text-white"><i class="fa-solid fa-bag-shopping w-5 text-center text-lg"></i><span class="font-medium">Produk & Sales</span></button>
+      <button onclick="switchTab('todos')" data-tab="todos" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-slate-400 hover:bg-slate-800 hover:text-white"><i class="fa-solid fa-people-group w-5 text-center text-lg"></i><span class="font-medium">Team Workspace</span></button>
+      <button onclick="switchTab('content')" data-tab="content" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors text-slate-400 hover:bg-slate-800 hover:text-white"><i class="fa-solid fa-file-lines w-5 text-center text-lg"></i><span class="font-medium">Content Log</span></button>
+    </nav>
+
+    <!-- Team Sync & Workspace Backup Hub -->
+    <div class="p-4 border-t border-slate-800 space-y-2 bg-slate-950/60">
+      <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1 flex items-center justify-between">
+        <span>Monthly Vault & Sync</span>
+        <span class="text-emerald-400">60+ Days Safe</span>
+      </div>
+      <button onclick="openMonthlyVaultModal()" class="w-full bg-gradient-to-r from-emerald-600/30 to-teal-600/30 hover:from-emerald-600/50 hover:to-teal-600/50 text-emerald-200 border border-emerald-500/40 text-xs font-bold py-2 px-3 rounded-lg flex items-center justify-between transition shadow-xs" title="Kelola arsip data per bulan, kunci bulan (Lock), & backup data >60 hari Seller Center">
+        <span class="flex items-center gap-2"><i class="fa-solid fa-vault text-emerald-400"></i> Arsip Bulanan (Vault)</span>
+        <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-extrabold" id="sidebar-vault-count-badge">0 Bln</span>
+      </button>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="exportWorkspaceJSON()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition border border-slate-700 shadow-sm" title="Download backup data semua brand & semua bulan (.json)">
+          <i class="fa-solid fa-file-export text-emerald-400"></i> Backup
+        </button>
+        <button onclick="document.getElementById('import-workspace-input').click()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition border border-slate-700 shadow-sm" title="Gabungkan / muat file backup arsip (.json)">
+          <i class="fa-solid fa-file-import text-blue-400"></i> Restore
+        </button>
+        <input type="file" id="import-workspace-input" class="hidden" accept=".json" onchange="importWorkspaceJSON(event)">
+      </div>
+      <div class="pt-2 border-t border-slate-800/80 space-y-1.5">
+        <button onclick="openExecutiveReportModal()" class="w-full bg-gradient-to-r from-blue-600/30 to-indigo-600/30 hover:from-blue-600/50 hover:to-indigo-600/50 text-indigo-200 border border-indigo-500/40 text-xs font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition shadow-xs" title="Buka ringkasan laporan eksekutif siap cetak / PDF">
+          <i class="fa-solid fa-file-invoice text-indigo-400"></i> Laporan Eksekutif (PDF)
+        </button>
+        <button onclick="confirmResetAllToZero()" class="w-full bg-rose-500/10 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/20 text-xs font-semibold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition" title="Kosongkan data brand aktif ke 0 untuk upload file baru">
+          <i class="fa-solid fa-trash-can text-xs"></i> <span id="btn-reset-label">Reset Data Brand Ini ke 0</span>
+        </button>
+        <button onclick="loadSampleRAPAData()" class="w-full bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/50 text-[11px] font-medium py-1.5 px-3 rounded-lg flex items-center justify-center gap-2 transition" title="Muat contoh data ke brand yang sedang aktif">
+          <i class="fa-solid fa-rotate text-[10px]"></i> Isi Contoh Data Brand
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 p-6 md:p-8 overflow-y-auto w-full h-full pt-20 md:pt-6 relative" id="main-content">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- TOP ACTIVE BRAND CONTEXT BAR -->
+      <div class="mb-6 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl p-3 px-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div id="top-brand-icon" class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-xs shrink-0">
+            B1
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300" id="top-brand-mode-badge">WORKSPACE BRAND 1</span>
+              <span class="text-xs font-mono text-slate-400" id="top-brand-handle">@rapa_indonesia</span>
+            </div>
+            <h2 class="text-sm font-bold text-slate-800 dark:text-white mt-0.5" id="top-brand-title">RAPAtech Indonesia — Data Terisolasi (Siap Upload Excel)</h2>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button onclick="switchBrand('brand_1')" id="top-pill-brand_1" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-blue-600 text-white shadow-xs">
+            <i class="fa-solid fa-tag mr-1 text-[10px]"></i> <span id="top-pill-name-brand_1">RAPAtech</span>
+          </button>
+          <button onclick="switchBrand('brand_2')" id="top-pill-brand_2" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200">
+            <i class="fa-solid fa-tag mr-1 text-[10px]"></i> <span id="top-pill-name-brand_2">MONTRA</span>
+          </button>
+          <button onclick="switchBrand('all')" id="top-pill-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200" title="Gabungan & Perbandingan 2 Brand">
+            <i class="fa-solid fa-building-columns mr-1 text-[10px] text-amber-500"></i> Holding (2 Brand)
+          </button>
+          <button onclick="openMonthlyVaultModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition flex items-center gap-1.5" title="Buka Arsip Bulanan (Monthly Data Vault) & Pengaman Data >60 Hari">
+            <i class="fa-solid fa-vault text-emerald-500 text-[11px]"></i> <span id="top-vault-btn-label">Arsip Bulanan (0 Bln)</span>
+          </button>
+          <button onclick="openBrandSettingsModal()" class="p-1.5 px-2.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700/70 text-slate-500 dark:text-slate-300 hover:text-blue-600 border border-slate-200 dark:border-slate-600 transition" title="Ubah Nama Brand 1 & Brand 2">
+            <i class="fa-solid fa-gear"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- TAB: OVERVIEW -->
+      <div id="tab-overview" class="tab-content animate-fade-in">
+        <header class="mb-6 flex flex-col md:flex-row justify-between md:items-end gap-4">
+          <div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white" id="overview-main-heading">Content & Revenue Overview</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1" id="overview-sub-heading">Dashboard analitik terpadu tim kreatif & performa penjualan.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-1.5 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-2xs">
+              <i class="fa-solid fa-calendar-days text-emerald-500 text-xs"></i>
+              <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Bulan:</span>
+              <select id="overview-month-filter" onchange="renderOverviewTab()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-md text-xs px-2 py-1 outline-none dark:text-white cursor-pointer font-semibold min-w-[135px]">
+                <option value="all">Semua Bulan (Total)</option>
+              </select>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-lg text-xs font-semibold border border-blue-200 dark:border-blue-800">
+              <i class="fa-solid fa-calendar-check"></i> <span id="overview-period-label">Data Kosong (0) - Siap Upload File</span>
+            </span>
+            <button onclick="switchTab('compare')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition" title="Bandingkan Pertumbuhan Bulanan (MoM)">
+              <i class="fa-solid fa-chart-line"></i> MoM Growth
+            </button>
+            <button onclick="openExecutiveReportModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm transition">
+              <i class="fa-solid fa-file-pdf"></i> Laporan Eksekutif (PDF)
+            </button>
+          </div>
+        </header>
+
+        <!-- MULTI-BRAND EXECUTIVE HOLDING COMPARISON (HEAD-TO-HEAD BRAND 1 VS BRAND 2) -->
+        <div id="holding-comparison-section" class="mb-8 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white p-6 rounded-2xl border border-indigo-500/30 shadow-lg">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-800">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-amber-500 text-slate-950 rounded-full">Multi-Brand Holding Intelligence</span>
+                <span class="text-xs text-indigo-300 font-medium" id="holding-total-gmv-badge">Total Omzet Perusahaan: Rp 0</span>
+              </div>
+              <h2 class="text-lg font-bold text-white mt-1 flex items-center gap-2">
+                <i class="fa-solid fa-scale-balanced text-amber-400"></i> Komparasi Performa Brand 1 vs Brand 2 (Real-Time)
+              </h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="openBrandSettingsModal()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-pen text-[10px] text-blue-400"></i> Kustomisasi Nama Brand
+              </button>
+            </div>
+          </div>
+
+          <!-- Revenue Share Progress Bar -->
+          <div class="mb-5">
+            <div class="flex justify-between text-xs font-bold mb-1.5">
+              <span class="text-blue-400 flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> <span id="hb-bar-label-1">Brand 1: 50%</span></span>
+              <span class="text-slate-400 text-[11px]">Kontribusi GMV Terhadap Perusahaan</span>
+              <span class="text-emerald-400 flex items-center gap-1.5"><span id="hb-bar-label-2">Brand 2: 50%</span> <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span></span>
+            </div>
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex p-0.5 gap-0.5">
+              <div id="hb-bar-1" class="bg-blue-500 h-full rounded-l-full transition-all duration-500" style="width: 50%"></div>
+              <div id="hb-bar-2" class="bg-emerald-500 h-full rounded-r-full transition-all duration-500" style="width: 50%"></div>
+            </div>
+          </div>
+
+          <!-- Side-by-Side Brand Cards & Comparison Table -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="holding-brand-cards-container">
+            <!-- Populated dynamically via renderHoldingComparison() -->
+          </div>
+        </div>
+
+        <!-- KPI TOP ROW: Reach & Traffic -->
+        <h2 class="font-bold text-lg text-slate-700 dark:text-slate-300 mb-4 flex items-center justify-between">
+          <span class="flex items-center"><i class="fa-solid fa-photo-film mr-2 text-blue-500"></i> Content Performance Metrics</span>
+          <span class="text-xs text-slate-400 font-normal" id="overview-mom-status-hint">Real TikTok Analytics Aggregation</span>
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3.5 mb-6">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-blue-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase">Total Views</h3>
+            <p class="text-2xl font-bold text-slate-800 dark:text-white" id="dash-overview-views">0</p>
+            <div id="mom-badge-views" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-cyan-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase">Reached Audience</h3>
+            <p class="text-2xl font-bold text-slate-800 dark:text-white" id="dash-overview-reach">0</p>
+            <div id="mom-badge-reach" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-emerald-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase">Avg Engagement</h3>
+            <p class="text-2xl font-bold text-emerald-600" id="dash-overview-er">0%</p>
+            <div id="mom-badge-er" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-purple-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase">New Followers</h3>
+            <p class="text-2xl font-bold text-purple-600" id="dash-overview-followers">0</p>
+            <div id="mom-badge-followers" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-indigo-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase">Net Growth</h3>
+            <p class="text-2xl font-bold text-indigo-600" id="dash-overview-netgrowth">0</p>
+            <div id="mom-badge-netgrowth" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-pink-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase flex items-center gap-1">Qty Video (#)</h3>
+            <p class="text-2xl font-bold text-pink-600 dark:text-pink-400" id="dash-overview-qtyvideo">0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="dash-overview-totalvideos-sub">Judul wajib # (Total: <span id="dash-overview-totalvideos">0</span>)</span>
+            <div id="mom-badge-qtyvideo" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-amber-500 flex justify-between items-center">
+            <div>
+              <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase">Active Tasks</h3>
+              <p class="text-2xl font-bold text-slate-800 dark:text-white" id="dash-task-count">0</p>
+            </div>
+            <div class="bg-amber-100 dark:bg-amber-900/30 p-2 rounded-lg text-amber-600 dark:text-amber-400">
+              <i class="fa-solid fa-list-check"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI SECOND ROW: Video & Carousel Summary -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+          <h2 class="font-bold text-lg text-slate-700 dark:text-slate-300 flex items-center">
+            <i class="fa-solid fa-layer-group mr-2 text-emerald-500"></i> Video & Carousel Summary
+          </h2>
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-400 font-normal hidden md:inline">CTR (%) = (Klik Produk ÷ Impresi Produk) × 100%</span>
+            <button onclick="switchTab('vc-summary')" class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg border border-blue-200 dark:border-blue-800 transition">
+              Buka Video & Carousel Summary <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-emerald-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase tracking-wider">1. GMV</h3>
+            <p class="text-xl font-bold text-emerald-600 dark:text-emerald-400" id="dash-overview-gmv">Rp 0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="dash-overview-gmv-sub">Direct & Indirect Video</span>
+            <div id="mom-badge-gmv" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-indigo-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase tracking-wider">2. Pesanan SKU</h3>
+            <p class="text-xl font-bold text-slate-800 dark:text-white" id="dash-overview-pesanan">0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="dash-overview-pesanan-sub">Total Teratribusi</span>
+            <div id="mom-badge-pesanan" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-sky-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase tracking-wider">3. Impresi Produk</h3>
+            <p class="text-xl font-bold text-sky-600 dark:text-sky-400" id="dash-overview-impresi">0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Tayangan Produk</span>
+            <div id="mom-badge-impresi" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-amber-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase tracking-wider">4. CTR (%)</h3>
+            <p class="text-xl font-bold text-amber-500" id="dash-overview-ctr">0%</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="dash-overview-ctor">CTOR: 0%</span>
+            <div id="mom-badge-ctr" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-blue-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase tracking-wider">5. Klik Produk</h3>
+            <p class="text-xl font-bold text-blue-600 dark:text-blue-400" id="dash-overview-klik">0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Klik Keranjang</span>
+            <div id="mom-badge-klik" class="mt-1"></div>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-rose-500">
+            <h3 class="text-slate-500 dark:text-slate-400 text-[11px] font-bold mb-1 uppercase tracking-wider">Top GPM (Rev/1k Views)</h3>
+            <p class="text-xl font-bold text-rose-500" id="dash-overview-gpm">Rp 0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5">Efisiensi Revenue</span>
+            <div id="mom-badge-gpm" class="mt-1"></div>
+          </div>
+        </div>
+
+        <!-- CONTENT PILLAR BREAKDOWN -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-8">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+            <div>
+              <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center">
+                <i class="fa-solid fa-cubes text-blue-500 mr-2"></i> Content Pillar Intelligence (Kategori Konten)
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Analisis pilar mana yang paling mendorong views vs pilar yang paling menghasilkan penjualan.</p>
+            </div>
+            <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg font-semibold">
+              Automated Pillar AI Tagging
+            </span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="pillar-cards-container">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- KPI TARGET TRACKER -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-8">
+          <div class="flex justify-between items-center mb-6">
+             <div>
+               <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center"><i class="fa-solid fa-bullseye mr-2 text-rose-500"></i> Monthly KPI Targets</h3>
+               <p class="text-xs text-slate-500 mt-0.5">Rumus CTR (%) = (Jumlah Klik Produk ÷ Jumlah Impresi Produk) × 100%</p>
+             </div>
+             <button onclick="openTargetModal()" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-lg transition font-semibold shadow-sm"><i class="fa-solid fa-pen mr-1"></i> Edit Targets</button>
+          </div>
+          <div class="space-y-5">
+             <div>
+                <div class="flex justify-between text-sm mb-1.5"><span class="font-semibold text-slate-600 dark:text-slate-400">Target GMV Bulanan</span><span id="kpi-gmv-text" class="font-bold text-emerald-600">Rp 0 / Rp 0 (0%)</span></div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden shadow-inner"><div id="kpi-gmv-bar" class="bg-emerald-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+             </div>
+             <div>
+                <div class="flex justify-between text-sm mb-1.5"><span class="font-semibold text-slate-600 dark:text-slate-400">Target Video Views</span><span id="kpi-views-text" class="font-bold text-blue-600">0 / 0 (0%)</span></div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden shadow-inner"><div id="kpi-views-bar" class="bg-blue-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+             </div>
+             <div>
+                <div class="flex justify-between text-sm mb-1.5"><span class="font-semibold text-slate-600 dark:text-slate-400">Target CTR Produk (%) <span class="text-xs font-normal text-slate-400" id="kpi-ctr-detail">(0 Klik ÷ 0 Impresi)</span></span><span id="kpi-ctr-text" class="font-bold text-amber-500">0% / 0% (0%)</span></div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden shadow-inner"><div id="kpi-ctr-bar" class="bg-amber-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+             </div>
+             <div>
+                <div class="flex justify-between text-sm mb-1.5"><span class="font-semibold text-slate-600 dark:text-slate-400">Target New Followers</span><span id="kpi-followers-text" class="font-bold text-purple-600">0 / 0 (0%)</span></div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3 overflow-hidden shadow-inner"><div id="kpi-followers-bar" class="bg-purple-500 h-3 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: VIDEO & CAROUSEL SUMMARY -->
+      <div id="tab-vc-summary" class="tab-content hidden-tab animate-fade-in">
+        <header class="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold mb-2 border border-emerald-200 dark:border-emerald-800">
+              <i class="fa-solid fa-layer-group"></i> Attribution & Conversion Hub
+            </div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white">Video & Carousel Summary</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Analisis performa GMV, Pesanan SKU, Impresi Produk, CTR (%), dan Klik Produk dari rekap data harian.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-2 bg-white dark:bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <i class="fa-solid fa-calendar-day text-blue-500 text-xs"></i>
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Periode:</span>
+              <select id="vc-date-filter" onchange="renderVCSummaryTab()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-xs px-2.5 py-1.5 outline-none dark:text-white cursor-pointer min-w-[140px] font-semibold">
+                <option value="all">Semua Tanggal</option>
+              </select>
+            </div>
+            <button onclick="openExecutiveReportModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition">
+              <i class="fa-solid fa-file-pdf"></i> Export Laporan PDF
+            </button>
+          </div>
+        </header>
+
+        <!-- Upload Box -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
+          <div class="flex items-center">
+            <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl mr-4 shrink-0">
+              <i class="fa-solid fa-file-csv"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white" id="filename-vc-summary">Upload File Video & Carousel Summary (.xlsx / .xls / .csv)</h3>
+              <p class="text-xs text-slate-500 mt-1">Mendukung kolom: Waktu, GMV dari video, Pesanan SKU teratribusi, Impresi Produk, Klik Produk, Rasio klik tayang (CTR), GPM, & CTOR.</p>
+            </div>
+          </div>
+          <div class="shrink-0">
+            <input type="file" id="file-vc-summary" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleVCSummaryUpload(event)">
+            <button onclick="document.getElementById('file-vc-summary').click()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-2">
+              <i class="fa-solid fa-upload"></i> Upload File Excel / CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- 5 MAIN METRICS CARDS (GMV, Pesanan SKU, Impresi Produk, CTR %, Klik Produk) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          <!-- 1. GMV -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-emerald-500">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">1. GMV</h3>
+              <span class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-sack-dollar"></i></span>
+            </div>
+            <p class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1" id="vc-stat-gmv">Rp 0</p>
+            <span class="text-[11px] text-slate-400 block mt-1.5 leading-tight" id="vc-stat-gmv-sub">Direct: Rp 0 | Indirect: Rp 0</span>
+            <div id="vc-mom-gmv" class="mt-1.5"></div>
+          </div>
+
+          <!-- 2. Pesanan SKU -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-indigo-500">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">2. Pesanan SKU</h3>
+              <span class="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs"><i class="fa-solid fa-boxes-stacked"></i></span>
+            </div>
+            <p class="text-2xl font-extrabold text-slate-800 dark:text-white mt-1" id="vc-stat-sku">0</p>
+            <span class="text-[11px] text-slate-400 block mt-1.5 leading-tight" id="vc-stat-sku-sub">Direct: 0 | Indirect: 0</span>
+            <div id="vc-mom-sku" class="mt-1.5"></div>
+          </div>
+
+          <!-- 3. Impresi Produk -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-sky-500">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">3. Impresi Produk</h3>
+              <span class="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xs"><i class="fa-solid fa-eye"></i></span>
+            </div>
+            <p class="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1" id="vc-stat-impresi">0</p>
+            <span class="text-[11px] text-slate-400 block mt-1.5 leading-tight" id="vc-stat-impresi-sub">Total Tayangan Produk</span>
+            <div id="vc-mom-impresi" class="mt-1.5"></div>
+          </div>
+
+          <!-- 4. CTR (%) -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-amber-500">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">4. CTR (%)</h3>
+              <span class="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs"><i class="fa-solid fa-percent"></i></span>
+            </div>
+            <p class="text-2xl font-extrabold text-amber-500 mt-1" id="vc-stat-ctr">0.00%</p>
+            <span class="text-[11px] text-slate-400 block mt-1.5 leading-tight" id="vc-stat-ctr-sub">Klik ÷ Impresi × 100%</span>
+            <div id="vc-mom-ctr" class="mt-1.5"></div>
+          </div>
+
+          <!-- 5. Klik Produk -->
+          <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-blue-500">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">5. Klik Produk</h3>
+              <span class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs"><i class="fa-solid fa-hand-pointer"></i></span>
+            </div>
+            <p class="text-2xl font-extrabold text-blue-600 dark:text-blue-400 mt-1" id="vc-stat-klik">0</p>
+            <span class="text-[11px] text-slate-400 block mt-1.5 leading-tight" id="vc-stat-klik-sub">Total Klik Keranjang</span>
+            <div id="vc-mom-klik" class="mt-1.5"></div>
+          </div>
+        </div>
+
+        <!-- SECONDARY COMPANION METRICS (CTOR, VV, GPM, AOV) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div class="bg-slate-100/80 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-slate-400 block">CTOR (Klik → Pesanan)</span>
+              <span class="text-lg font-bold text-purple-600 dark:text-purple-400" id="vc-stat-ctor">0.00%</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium" id="vc-stat-ctor-detail">Pesanan ÷ Klik</span>
+          </div>
+          <div class="bg-slate-100/80 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-slate-400 block">Video Views (VV)</span>
+              <span class="text-lg font-bold text-slate-800 dark:text-white" id="vc-stat-vv">0</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium">Tayangan Video</span>
+          </div>
+          <div class="bg-slate-100/80 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-slate-400 block">Rata-rata GPM (Rp)</span>
+              <span class="text-lg font-bold text-rose-500" id="vc-stat-gpm">Rp 0</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium">GMV / 1.000 VV</span>
+          </div>
+          <div class="bg-slate-100/80 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700/70 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold uppercase text-slate-400 block">Nilai Pesanan (AOV)</span>
+              <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" id="vc-stat-aov">Rp 0</span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-medium" id="vc-stat-buyers">Avg Pembeli: 0/hr</span>
+          </div>
+        </div>
+
+        <!-- SMART DIAGNOSTICS: HOOK VS CHECKOUT (OPSI C) -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-slate-700/60">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-bolt-lightning text-amber-500"></i> Diagnostik Cerdas: Hook (CTR) vs Checkout (GMV & CTOR)
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Mendeteksi otomatis tanggal dengan daya tarik klik tertinggi vs konversi pembelian tertinggi.</p>
+            </div>
+            <span class="text-[11px] font-bold bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-lg border border-amber-200 dark:border-amber-800">
+              Auto-Diagnostic Engine
+            </span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="vc-diagnostic-cards">
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-400">
+              Belum ada data harian. Silakan upload file Excel/CSV atau muat contoh data.
+            </div>
+          </div>
+        </div>
+
+        <!-- INTERACTIVE DAILY BREAKDOWN TABLE (OPSI A) -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+          <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-table-list text-blue-500"></i> Tabel Rincian Harian Video & Carousel
+              </h3>
+              <p class="text-xs text-slate-500 mt-0.5">Data harian lengkap: GMV, Pesanan SKU, Impresi Produk, CTR (%), Klik Produk, CTOR (%), dan GPM.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400 font-medium">Urutkan:</span>
+              <select id="vc-sort-select" onchange="renderVCSummaryTab()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs px-3 py-1.5 outline-none dark:text-white cursor-pointer font-semibold">
+                <option value="date-asc">Tanggal (Awal → Akhir)</option>
+                <option value="date-desc">Tanggal (Terbaru → Lama)</option>
+                <option value="gmv-desc">GMV Tertinggi</option>
+                <option value="ctr-desc">CTR (%) Tertinggi</option>
+                <option value="klik-desc">Klik Produk Tertinggi</option>
+                <option value="sku-desc">Pesanan SKU Tertinggi</option>
+              </select>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left whitespace-nowrap">
+              <thead class="uppercase bg-slate-50 dark:bg-slate-900/80 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700 font-bold">
+                <tr>
+                  <th class="px-4 py-3.5">Waktu / Tanggal</th>
+                  <th class="px-4 py-3.5 text-right">1. GMV (Rp)</th>
+                  <th class="px-4 py-3.5 text-right">2. Pesanan SKU</th>
+                  <th class="px-4 py-3.5 text-right">3. Impresi Produk</th>
+                  <th class="px-4 py-3.5 text-right">4. CTR (%)</th>
+                  <th class="px-4 py-3.5 text-right">5. Klik Produk</th>
+                  <th class="px-4 py-3.5 text-right">CTOR (%)</th>
+                  <th class="px-4 py-3.5 text-right">VV & GPM</th>
+                </tr>
+              </thead>
+              <tbody id="vc-summary-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/70">
+                <tr><td colspan="8" class="text-center py-8 text-slate-400">Belum ada data. Silakan upload file Excel/CSV Video & Carousel Summary.</td></tr>
+              </tbody>
+              <tfoot id="vc-summary-table-foot" class="bg-slate-50 dark:bg-slate-900/90 font-extrabold text-slate-800 dark:text-white border-t-2 border-slate-200 dark:border-slate-700">
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: DAILY & MONTHLY (MoM) COMPARE -->
+      <div id="tab-compare" class="tab-content hidden-tab animate-fade-in">
+        <header class="mb-6 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold mb-2 border border-emerald-200 dark:border-emerald-800">
+              <i class="fa-solid fa-arrow-trend-up"></i> Month-over-Month (MoM) Growth Intelligence
+            </div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white">MoM & Period Growth Comparison</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Bandingkan persentase pertumbuhan bulanan (contoh: September vs Oktober) maupun rentang tanggal kustom.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Toggle Mode Perhitungan: Total Bulanan vs Rata-rata Harian (Daily Run-Rate) -->
+            <div class="bg-white dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs flex items-center text-xs">
+              <button type="button" id="btn-norm-total" onclick="setCompareNormalization('total')" class="px-3 py-1.5 rounded-lg font-bold bg-blue-600 text-white shadow-2xs transition flex items-center gap-1.5">
+                <i class="fa-solid fa-calculator text-[10px]"></i> Total Periode
+              </button>
+              <button type="button" id="btn-norm-daily" onclick="setCompareNormalization('daily')" class="px-3 py-1.5 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition flex items-center gap-1.5" title="Bandingkan rata-rata per hari aktif (Ideal jika bulan berjalan belum penuh 30 hari)">
+                <i class="fa-solid fa-gauge-high text-[10px] text-amber-500"></i> Rata-Rata Harian (Run-Rate)
+              </button>
+            </div>
+            <button onclick="openExecutiveReportModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition">
+              <i class="fa-solid fa-file-pdf"></i> Export PDF
+            </button>
+          </div>
+        </header>
+
+        <!-- MULTI-MONTH SMART MERGE & STORED MONTHS BAR (IDE 2) -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex items-start sm:items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-lg shrink-0">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-200">Database Multi-Bulan Tersimpan</h3>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 font-bold" id="multi-month-count-badge">0 Bulan</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5 mt-1.5" id="stored-months-pills">
+                <span class="text-xs text-slate-400">Belum ada bulan tersimpan. Silakan upload file Excel bulan September, Oktober, dst.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100 dark:border-slate-700">
+            <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+              <i class="fa-solid fa-code-merge text-emerald-500 text-xs"></i>
+              <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Saat Upload File Baru:</span>
+              <select id="upload-merge-mode-select" onchange="setUploadMergeMode(this.value)" class="bg-transparent text-xs font-extrabold text-emerald-600 dark:text-emerald-400 outline-none cursor-pointer">
+                <option value="merge">Gabungkan Lintas Bulan (Smart Merge)</option>
+                <option value="replace">Timpa Data Lama (Replace)</option>
+              </select>
+            </div>
+            <button onclick="openMonthlyVaultModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center gap-1.5" title="Kelola Arsip Bulanan, Kunci Bulan (Lock), & Backup Data >60 Hari">
+              <i class="fa-solid fa-vault"></i> Kelola Arsip Bulanan (Vault)
+            </button>
+            <button onclick="loadSampleMultiMonthData()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition flex items-center gap-1.5" title="Muat simulasi data 2 bulan penuh (September vs Oktober 2026)">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Simulasi Data Sep vs Okt
+            </button>
+          </div>
+        </div>
+
+        <!-- SMART COMPARISON SELECTOR (MONTHLY MoM MODE VS CUSTOM DATE RANGE MODE) -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 mb-6">
+          <!-- Mode Tabs & Quick Presets -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-100 dark:border-slate-700">
+            <div class="flex items-center gap-2">
+              <button type="button" id="btn-cmp-mode-month" onclick="switchCompareMode('month')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-2xs transition flex items-center gap-1.5">
+                <i class="fa-solid fa-calendar-alt"></i> Perbandingan Antar Bulan (MoM)
+              </button>
+              <button type="button" id="btn-cmp-mode-custom" onclick="switchCompareMode('custom')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-calendar-week"></i> Rentang Tanggal Kustom
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] font-bold text-slate-400 mr-1">Preset Cepat:</span>
+              <button type="button" onclick="applyComparePreset('mom')" class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition">
+                📅 Bulan Terbaru vs Bulan Lalu
+              </button>
+              <button type="button" onclick="applyComparePreset('7d')" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-700/70 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition">
+                ⚡ 7 Hari Terakhir vs 7 Hari Sebelumnya
+              </button>
+              <button type="button" onclick="applyComparePreset('half')" class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-700/70 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition">
+                📊 Paruh Akhir vs Paruh Awal
+              </button>
+            </div>
+          </div>
+
+          <!-- VIEW A: MONTH-OVER-MONTH (MoM) SELECTOR -->
+          <div id="compare-selector-month" class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <!-- Bulan Pembanding / Bulan Lalu (Baseline B) -->
+            <div class="flex flex-col w-full md:w-[44%] p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-extrabold text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 inline-block bg-slate-400 rounded-full"></span> 1. Bulan Awal / Baseline (Bulan Lalu)
+                </label>
+                <span class="text-[10px] font-semibold text-slate-400" id="mom-days-info-b">0 Hari Aktif</span>
+              </div>
+              <select id="compare-month-b" onchange="onMonthSelectorChange()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-bold px-3 py-2.5 outline-none dark:text-white w-full shadow-2xs cursor-pointer">
+                <option value="">Pilih Bulan Awal (Contoh: September)</option>
+              </select>
+            </div>
+
+            <!-- Swap / Compare Icon -->
+            <div class="flex flex-col items-center justify-center shrink-0">
+              <button type="button" onclick="swapComparisonPeriods()" class="bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:hover:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 rounded-full h-11 w-11 flex items-center justify-center shadow-sm transition-transform hover:scale-105" title="Tukar Bulan Awal & Bulan Target">
+                <i class="fa-solid fa-right-left text-sm"></i>
+              </button>
+              <span class="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 uppercase tracking-wider">VS (MoM %)</span>
+            </div>
+
+            <!-- Bulan Target / Bulan Ini (Target A) -->
+            <div class="flex flex-col w-full md:w-[44%] p-3.5 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/70">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 inline-block bg-blue-600 rounded-full"></span> 2. Bulan Target / Evaluasi (Bulan Ini)
+                </label>
+                <span class="text-[10px] font-semibold text-blue-500" id="mom-days-info-a">0 Hari Aktif</span>
+              </div>
+              <select id="compare-month-a" onchange="onMonthSelectorChange()" class="bg-white dark:bg-slate-800 border border-blue-300 dark:border-blue-700 rounded-lg text-sm font-bold px-3 py-2.5 outline-none text-blue-700 dark:text-blue-300 w-full shadow-2xs cursor-pointer">
+                <option value="">Pilih Bulan Target (Contoh: Oktober)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- VIEW B: CUSTOM DATE RANGE SELECTOR -->
+          <div id="compare-selector-custom" class="hidden flex-col md:flex-row items-center justify-between gap-4">
+            <!-- Range B (Baseline / Periode Awal) -->
+            <div class="flex flex-col w-full md:w-[44%] p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700">
+              <label class="text-xs font-bold text-slate-500 uppercase mb-2"><span class="w-2.5 h-2.5 inline-block bg-slate-400 dark:bg-slate-500 rounded-full mr-1"></span> 1. Periode Awal / Pembanding (Baseline)</label>
+              <div class="flex flex-col sm:flex-row items-center gap-2">
+                <input type="date" id="start-date-b" onchange="renderComparisonTable()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-xs font-semibold px-3 py-2 outline-none dark:text-white w-full shadow-2xs cursor-pointer">
+                <span class="text-slate-400 font-bold text-xs">s/d</span>
+                <input type="date" id="end-date-b" onchange="renderComparisonTable()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-xs font-semibold px-3 py-2 outline-none dark:text-white w-full shadow-2xs cursor-pointer">
+              </div>
+            </div>
+
+            <button type="button" onclick="swapComparisonPeriods()" class="bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/40 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 rounded-full h-11 w-11 flex items-center justify-center shadow-sm transition-transform hover:scale-105 shrink-0" title="Tukar Periode & Bandingkan">
+              <i class="fa-solid fa-code-compare text-base"></i>
+            </button>
+
+            <!-- Range A (Target / Periode Evaluasi) -->
+            <div class="flex flex-col w-full md:w-[44%] p-3.5 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/70">
+              <label class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-2"><span class="w-2.5 h-2.5 inline-block bg-blue-500 rounded-full mr-1"></span> 2. Periode Target / Evaluasi (Terbaru)</label>
+              <div class="flex flex-col sm:flex-row items-center gap-2">
+                <input type="date" id="start-date-a" onchange="renderComparisonTable()" class="bg-white dark:bg-slate-800 border border-blue-300 dark:border-blue-700 rounded-lg text-xs font-semibold px-3 py-2 outline-none dark:text-white w-full shadow-2xs cursor-pointer">
+                <span class="text-slate-400 font-bold text-xs">s/d</span>
+                <input type="date" id="end-date-a" onchange="renderComparisonTable()" class="bg-white dark:bg-slate-800 border border-blue-300 dark:border-blue-700 rounded-lg text-xs font-semibold px-3 py-2 outline-none dark:text-white w-full shadow-2xs cursor-pointer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 EXECUTIVE MoM GROWTH HIGHLIGHT CARDS (IDE 1) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6" id="mom-highlight-cards">
+          <!-- Populated dynamically via renderComparisonTable() -->
+        </div>
+
+        <!-- END-OF-MONTH PACING & DAILY RUN-RATE PROJECTION BANNER (IDE 3) -->
+        <div id="mom-pacing-banner" class="hidden mb-6 bg-gradient-to-r from-indigo-950 via-slate-900 to-emerald-950 text-white p-5 rounded-xl border border-indigo-500/30 shadow-md">
+          <!-- Populated dynamically when comparing partial month vs full month or always shown for active month -->
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <!-- Chart H2H -->
+          <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <h3 class="font-bold text-slate-800 dark:text-white text-sm flex items-center">
+                  <i class="fa-solid fa-chart-column text-blue-500 mr-2"></i> Visualisasi MoM Growth
+                </h3>
+                <select id="compare-chart-mode" onchange="renderComparisonTable()" class="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-[11px] font-bold px-2.5 py-1 outline-none dark:text-white cursor-pointer">
+                  <option value="pct">Grafik % Pertumbuhan (MoM %)</option>
+                  <option value="h2h">Head-to-Head Nominal</option>
+                </select>
+              </div>
+              <p class="text-[11px] text-slate-400 mb-4" id="compare-chart-subtitle">Persentase kenaikan / penurunan setiap metrik utama.</p>
+              <div class="h-72 w-full"><canvas id="chartCompare"></canvas></div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 text-[11px] text-slate-500 dark:text-slate-400" id="compare-executive-summary-box">
+              Pilih bulan untuk melihat kesimpulan otomatis.
+            </div>
+          </div>
+          
+          <!-- Table Delta (12 Metrics Complete) -->
+          <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                  <i class="fa-solid fa-scale-balanced text-emerald-500"></i> Tabel Analisis Pertumbuhan Bulanan (MoM Variance)
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">Rumus MoM (%) = ((Bulan Target − Bulan Awal) ÷ Bulan Awal) × 100%</p>
+              </div>
+              <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800" id="compare-norm-badge">
+                Mode: Total Akumulasi Bulanan
+              </span>
+            </div>
+            <div class="overflow-x-auto flex-1">
+              <table class="w-full text-xs text-left whitespace-nowrap">
+                <thead class="text-[11px] text-slate-500 dark:text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 font-bold">
+                  <tr>
+                    <th class="px-5 py-3.5">Metrik Performa</th>
+                    <th class="px-4 py-3.5 text-right text-slate-500 dark:text-slate-400" id="th-date-b">Bulan Awal (B)</th>
+                    <th class="px-4 py-3.5 text-right text-blue-600 dark:text-blue-400" id="th-date-a">Bulan Target (A)</th>
+                    <th class="px-4 py-3.5 text-right">Selisih (Δ Nominal)</th>
+                    <th class="px-4 py-3.5 text-right">MoM Growth (%)</th>
+                    <th class="px-4 py-3.5 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/70" id="comparison-table-body">
+                   <tr><td colspan="6" class="text-center py-10 text-slate-500">Silakan pilih bulan atau rentang tanggal.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: ANALYTICS -->
+      <div id="tab-analytics" class="tab-content hidden-tab animate-fade-in">
+        <header class="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+          <div><h1 class="text-3xl font-bold text-slate-800 dark:text-white">Data Analytics</h1><p class="text-slate-500 dark:text-slate-400 mt-1">Analisis demografi dan pertumbuhan.</p></div>
+          <div class="flex items-center gap-3 bg-white dark:bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+             <i class="fa-solid fa-calendar-day text-blue-500"></i><span class="text-sm font-bold text-slate-700 dark:text-slate-300">Periode:</span>
+             <select id="analytics-date-filter" onchange="renderAnalytics()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-sm px-3 py-1.5 outline-none dark:text-white cursor-pointer min-w-[130px] font-medium"><option value="">No Data</option></select>
+          </div>
+        </header>
+
+        <div class="flex overflow-x-auto space-x-2 border-b border-slate-200 dark:border-slate-700 mb-6 pb-2">
+          <button onclick="switchAnalyticSubTab('a-overview')" id="btn-a-overview" class="sub-nav-btn px-5 py-2.5 rounded-t-lg font-semibold text-sm transition-colors border-b-2 border-blue-600 text-blue-600"><i class="fa-solid fa-chart-line mr-2"></i> Overview</button>
+          <button onclick="switchAnalyticSubTab('a-audience')" id="btn-a-audience" class="sub-nav-btn px-5 py-2.5 rounded-t-lg font-semibold text-sm transition-colors border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"><i class="fa-solid fa-users mr-2"></i> Audience</button>
+          <button onclick="switchAnalyticSubTab('a-video')" id="btn-a-video" class="sub-nav-btn px-5 py-2.5 rounded-t-lg font-semibold text-sm transition-colors border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"><i class="fa-solid fa-video mr-2"></i> Video Perf</button>
+        </div>
+
+        <!-- ANALYTICS: OVERVIEW -->
+        <div id="a-overview" class="analytic-sub-tab animate-fade-in space-y-6">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between gap-4">
+            <div class="flex items-center"><i class="fa-solid fa-file-excel text-3xl text-emerald-600 mr-4"></i><div><h3 class="font-bold text-slate-800 dark:text-white" id="filename-overview">Upload Data Overview</h3><p class="text-xs text-slate-500 mt-1">Mendukung format .xlsx, .xls, dan .csv (Multi-tanggal otomatis dipecah).</p></div></div>
+            <div><input type="file" id="file-overview" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleAnalyticsUpload(event, 'overview', 'filename-overview')"><button onclick="document.getElementById('file-overview').click()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 dark:border-slate-600 shadow-sm transition"><i class="fa-solid fa-upload mr-2"></i>Upload File</button></div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Video Views</h3><p id="stat-a-views" class="text-2xl font-bold text-slate-800 dark:text-white">0</p></div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Reached Audience</h3><p id="stat-a-reach" class="text-2xl font-bold text-cyan-600">0</p></div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Engagement Rate</h3><p id="stat-a-er" class="text-2xl font-bold text-emerald-600">0%</p></div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Net Growth (Followers)</h3><p id="stat-a-netgrowth" class="text-2xl font-bold text-purple-600">0</p></div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">New Followers</h3><p id="stat-a-followers" class="text-2xl font-bold text-slate-800 dark:text-white">0</p></div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Profile Views</h3><p id="stat-a-profile" class="text-2xl font-bold text-slate-800 dark:text-white">0</p></div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Likes</h3><p id="stat-a-likes" class="text-2xl font-bold text-rose-500">0</p></div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"><h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Shares & Comments</h3><p id="stat-a-shares" class="text-2xl font-bold text-indigo-600">0</p></div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS: AUDIENCE -->
+        <div id="a-audience" class="analytic-sub-tab hidden-tab animate-fade-in space-y-6">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between gap-4">
+            <div class="flex items-center"><i class="fa-solid fa-users text-3xl text-purple-600 mr-4"></i><div><h3 class="font-bold text-slate-800 dark:text-white" id="filename-audience">Upload Data Audience</h3><p class="text-xs text-slate-500 mt-1">Mendukung .xlsx, .xls, .csv (Menganalisis jangkauan vs audiens berinteraksi).</p></div></div>
+            <div><input type="file" id="file-audience" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleAnalyticsUpload(event, 'audience', 'filename-audience')"><button onclick="document.getElementById('file-audience').click()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm border shadow-sm transition"><i class="fa-solid fa-upload mr-2"></i>Upload File</button></div>
+          </div>
+          
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-blue-500">
+              <h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Total Reached Audience</h3>
+              <p id="aud-stat-reached" class="text-2xl font-bold text-slate-800 dark:text-white">0</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-purple-500">
+              <h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Total Engaged Audience</h3>
+              <p id="aud-stat-engaged" class="text-2xl font-bold text-purple-600">0</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-emerald-500">
+              <h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Audience Engagement %</h3>
+              <p id="aud-stat-er" class="text-2xl font-bold text-emerald-600">0%</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-indigo-500">
+              <h3 class="text-xs font-bold mb-1 text-slate-500 dark:text-slate-400">Followers per 1K Reach</h3>
+              <p id="aud-stat-rate" class="text-2xl font-bold text-indigo-600">0</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border shadow-sm border-slate-200 dark:border-slate-700">
+              <h3 class="font-bold mb-2 text-slate-800 dark:text-white flex items-center">
+                <i class="fa-solid fa-chart-area text-blue-500 mr-2"></i> Reached vs Engaged Audience Trend
+              </h3>
+              <p class="text-xs text-slate-500 mb-4">Perbandingan jumlah audiens yang melihat video vs yang aktif berinteraksi.</p>
+              <div class="h-64"><canvas id="chartGender"></canvas></div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border shadow-sm border-slate-200 dark:border-slate-700">
+              <h3 class="font-bold mb-2 text-slate-800 dark:text-white flex items-center">
+                <i class="fa-solid fa-chart-line text-purple-500 mr-2"></i> Follower Growth vs Churn
+              </h3>
+              <p class="text-xs text-slate-500 mb-4">Pertumbuhan pengikut baru vs pengikut yang hilang (Net Retention).</p>
+              <div class="h-64 w-full"><canvas id="chartAge"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS: VIDEO -->
+        <div id="a-video" class="analytic-sub-tab hidden-tab animate-fade-in space-y-6">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col lg:flex-row justify-between lg:items-center gap-4 shadow-sm">
+            <div class="flex items-center">
+              <i class="fa-solid fa-video text-3xl text-indigo-600 mr-4 shrink-0"></i>
+              <div>
+                <h3 class="font-bold text-slate-800 dark:text-white" id="filename-video">Upload Data Video Performance</h3>
+                <p class="text-xs text-slate-500 mt-1">Mendukung .xlsx, .xls, .csv (Menganalisis link video, views, likes, shares, favorites, & validasi hashtag # per bulan).</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Simpan ke Bulan:</span>
+                <input type="month" id="video-upload-target-month" class="bg-transparent text-xs font-bold text-indigo-600 dark:text-indigo-400 outline-none cursor-pointer" title="Kosongkan untuk deteksi otomatis dari tanggal post, atau pilih bulan spesifik (misal 2026-09)">
+              </div>
+              <input type="file" id="file-video" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleAnalyticsUpload(event, 'video', 'filename-video')">
+              <button onclick="document.getElementById('file-video').click()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm border border-slate-200 dark:border-slate-600 shadow-sm transition font-semibold">
+                <i class="fa-solid fa-upload mr-2"></i>Upload File
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-pink-500">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold mb-1 uppercase tracking-wider flex items-center gap-1">Quantity Video (#)</h3>
+              <p class="text-2xl font-bold text-pink-600 dark:text-pink-400 mt-1" id="stat-a-hashtag-videos">0</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Syarat: Judul wajib ada #</span>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-indigo-500">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold mb-1 uppercase tracking-wider">Total Video Terupload</h3>
+              <p class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="stat-a-total-videos">0</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Semua baris video</span>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-emerald-500">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold mb-1 uppercase tracking-wider">Video Utama (>1K Views)</h3>
+              <p class="text-2xl font-bold text-emerald-600 mt-1" id="stat-a-organic-videos">0</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Views ≥ 1.000</span>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-blue-500">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold mb-1 uppercase tracking-wider">Top Single Video Views</h3>
+              <p class="text-2xl font-bold text-blue-600 mt-1" id="stat-a-top-views">0</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Tertinggi di periode ini</span>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 border-l-4 border-l-amber-500">
+              <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold mb-1 uppercase tracking-wider">Total Favorites / Bookmark</h3>
+              <p class="text-2xl font-bold text-amber-500 mt-1" id="stat-a-favorites">0</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5">Disimpan audiens</span>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-3">
+              <div>
+                <h3 class="font-bold text-slate-800 dark:text-white">Top 10 Video Terpopuler</h3>
+                <p class="text-xs text-slate-500">Berdasarkan data analitik video TikTok yang terekam.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <select id="video-filter-type" onchange="filterAndRenderVideoAnalytics()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs px-3 py-1.5 outline-none dark:text-white cursor-pointer font-medium">
+                  <option value="hashtag" selected>Video Ber-Hashtag (#)</option>
+                  <option value="organic">Video Konten Utama (>1K Views)</option>
+                  <option value="all">Semua Video</option>
+                  <option value="live">Live Promo Snippets (<1K Views)</option>
+                </select>
+              </div>
+            </div>
+            <div class="h-72 w-full mb-6"><canvas id="chartVideo"></canvas></div>
+
+            <!-- Table of Videos with TikTok Links -->
+            <div class="border-t border-slate-100 dark:border-slate-700 pt-4 overflow-x-auto">
+              <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center">
+                <i class="fa-brands fa-tiktok mr-2 text-rose-500"></i> Video Content Performance Table (Click to Open)
+              </h4>
+              <table class="w-full text-xs text-left">
+                <thead class="uppercase bg-slate-50 dark:bg-slate-900 text-slate-500 border-b border-slate-200 dark:border-slate-700">
+                  <tr>
+                    <th class="px-3 py-2.5">Rank</th>
+                    <th class="px-3 py-2.5">Judul Video & Pilar</th>
+                    <th class="px-3 py-2.5">Post Time</th>
+                    <th class="px-3 py-2.5 text-right">Views</th>
+                    <th class="px-3 py-2.5 text-right">Likes</th>
+                    <th class="px-3 py-2.5 text-right">Shares</th>
+                    <th class="px-3 py-2.5 text-right">Favs</th>
+                    <th class="px-3 py-2.5 text-center">Link</th>
+                  </tr>
+                </thead>
+                <tbody id="video-perf-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                  <tr><td colspan="8" class="text-center py-6 text-slate-500">Memuat data video...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: PRODUK & SALES -->
+      <div id="tab-products" class="tab-content hidden-tab animate-fade-in">
+        <header class="mb-6 flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4">
+          <div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white">Produk & Sales (Performa Per-Video)</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Analisis mendalam daftar video per bulan: Informasi Video, Produk Ditag, Produk Dilihat, Klik Produk, CTR (%), Pesanan SKU, GMV, & Retensi.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-2 bg-white dark:bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <i class="fa-solid fa-calendar-days text-blue-500 text-xs"></i>
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Arsip Bulan:</span>
+              <select id="sales-month-filter" onchange="renderSales()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-xs px-2.5 py-1.5 outline-none dark:text-white cursor-pointer min-w-[145px] font-bold">
+                <option value="all">Semua Bulan (Total)</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2 bg-white dark:bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <i class="fa-solid fa-filter text-emerald-500 text-xs"></i>
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Filter Video:</span>
+              <select id="sales-date-filter" onchange="renderSales()" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg text-xs px-2.5 py-1.5 outline-none dark:text-white cursor-pointer min-w-[155px] font-semibold">
+                <option value="all">Semua Video</option>
+                <option value="with-gmv">Video Menghasilkan GMV (>Rp 0)</option>
+                <option value="hashtag">Video Ber-Hashtag (#)</option>
+                <option value="organic">Video Konten Utama (≥1K VV)</option>
+                <option value="pillar:Charger">Pilar: Charger & Fast Charge</option>
+                <option value="pillar:Power Bank">Pilar: Power Bank</option>
+                <option value="pillar:Case">Pilar: Case & Protection</option>
+                <option value="pillar:Tempered Glass">Pilar: Tempered Glass (AR)</option>
+                <option value="pillar:Promo/Live">Pilar: Promo / Live Session</option>
+              </select>
+            </div>
+          </div>
+        </header>
+        
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 mb-6 flex flex-col lg:flex-row justify-between lg:items-center gap-4 shadow-sm">
+          <div class="flex items-center">
+            <i class="fa-solid fa-file-excel text-3xl text-emerald-600 mr-4 shrink-0"></i>
+            <div>
+              <h3 class="font-bold text-slate-800 dark:text-white" id="filename-product">Upload Video Performance List (.xlsx / .csv)</h3>
+              <p class="text-xs text-slate-500 mt-1">Khusus file daftar per-video Seller Center (Kolom: Informasi Video, Waktu, Produk, VV, Produk Dilihat, Klik Produk, Pesanan SKU, GMV dari video, GPM, Retensi, CTOR).</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 bg-emerald-50/70 dark:bg-emerald-950/30 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/70">
+              <i class="fa-solid fa-folder-plus text-emerald-600 dark:text-emerald-400 text-xs"></i>
+              <span class="text-[11px] font-bold text-slate-600 dark:text-slate-300">Simpan ke Arsip Bulan:</span>
+              <input type="month" id="product-upload-target-month" class="bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded-lg px-2 py-1 text-xs font-extrabold text-emerald-700 dark:text-emerald-300 outline-none cursor-pointer" title="Pilih bulan laporan (misal 2026-09 untuk September, 2026-10 untuk Oktober). Kosongkan jika ingin deteksi otomatis dari tanggal post video.">
+            </div>
+            <input type="file" id="file-product" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleProductUpload(event)">
+            <button onclick="document.getElementById('file-product').click()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+              <i class="fa-solid fa-upload"></i> Upload File Produk & Sales
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 Top Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-emerald-500">
+            <h3 class="text-slate-500 text-[11px] font-bold mb-1 uppercase">GMV dari Video</h3>
+            <p id="s-gmv" class="text-xl font-bold text-emerald-600">Rp 0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="s-gmv-sub">Direct & Indirect</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-indigo-500">
+            <h3 class="text-slate-500 text-[11px] font-bold mb-1 uppercase">Pesanan SKU</h3>
+            <p id="s-sku" class="text-xl font-bold text-slate-800 dark:text-white">0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="s-sku-sub">Produk Terjual: 0</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-blue-500">
+            <h3 class="text-slate-500 text-[11px] font-bold mb-1 uppercase">Video Views (VV)</h3>
+            <p id="s-vv" class="text-xl font-bold text-blue-600">0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="s-vv-sub">Total: 0 Video</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-sky-500">
+            <h3 class="text-slate-500 text-[11px] font-bold mb-1 uppercase">Produk Dilihat</h3>
+            <p id="s-impresi" class="text-xl font-bold text-sky-600 dark:text-sky-400">0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="s-klik-sub">Klik Produk: 0</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-amber-500">
+            <h3 class="text-slate-500 text-[11px] font-bold mb-1 uppercase">CTR Produk (%)</h3>
+            <p id="s-ctr" class="text-xl font-bold text-amber-500">0%</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="s-ctor-sub">CTOR: 0%</span>
+          </div>
+          <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-rose-500">
+            <h3 class="text-slate-500 text-[11px] font-bold mb-1 uppercase">Avg GPM</h3>
+            <p id="s-gpm" class="text-xl font-bold text-rose-500">Rp 0</p>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="s-ret-sub">Avg Retensi: 0%</span>
+          </div>
+        </div>
+
+        <!-- Advanced Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Funnel Chart -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <h3 class="font-bold text-slate-800 dark:text-white mb-2 flex items-center"><i class="fa-solid fa-filter text-blue-500 mr-2"></i> Traffic & Conversion Funnel</h3>
+                <p class="text-xs text-slate-500 mb-4">Menganalisis persentase drop-off audiens ke keranjang.</p>
+                <div class="h-64 w-full"><canvas id="chartFunnel"></canvas></div>
+            </div>
+            
+            <!-- Scatter Plot GPM vs Retention -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <h3 class="font-bold text-slate-800 dark:text-white mb-2 flex items-center"><i class="fa-solid fa-bullseye text-amber-500 mr-2"></i> GPM vs Retention (Video Matrix)</h3>
+                <p class="text-xs text-slate-500 mb-4">Posisi kanan atas = Video Super Bintang (Tahan lama & Menghasilkan).</p>
+                <div class="h-64 w-full"><canvas id="chartScatter"></canvas></div>
+            </div>
+        </div>
+
+        <!-- SMART CREATIVE DIAGNOSIS & HOOK PATTERN ANALYZER -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-6" id="section-smart-diagnosis">
+          <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-3 border-b border-slate-100 dark:border-slate-700/60 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded">Smart Engine</span>
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center text-lg">
+                  <i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-2"></i> Creative Matrix & Hook Pattern Analyzer
+                </h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">Diagnosa otomatis 4-kuadran performa video, deteksi formula hook berkonversi tinggi, dan rekomendasi alokasi naskah.</p>
+            </div>
+            <div id="pillar-balance-badge" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-pie"></i> Menghitung Rasio Konten...
+            </div>
+          </div>
+
+          <!-- 4-Quadrant Diagnosis Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" id="diagnosis-quadrant-cards">
+            <!-- Dynamically populated by renderSmartDiagnosis() -->
+          </div>
+
+          <!-- Winning Keywords & Hooks Extractor -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <div class="flex justify-between items-center mb-3">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                  <i class="fa-solid fa-fire text-rose-500"></i> Winning Hooks & Caption Keywords
+                </h4>
+                <span class="text-[11px] text-slate-400">Total GMV & Frekuensi Muncul</span>
+              </div>
+              <div class="flex flex-wrap gap-2" id="winning-keywords-container">
+                <span class="text-xs text-slate-400">Belum ada data video. Upload data video sales untuk melihat analisis hook.</span>
+              </div>
+            </div>
+
+            <!-- Content Pillar Strategic Opportunity -->
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700/60 flex flex-col justify-between">
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                  <i class="fa-solid fa-compass-drafting text-emerald-500"></i> Rekomendasi Alokasi Konten
+                </h4>
+                <div id="pillar-recommendation-text" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  Upload file video untuk mendapatkan rekomendasi alokasi pilar konten minggu depan.
+                </div>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+                <span>Evaluasi Strategi</span>
+                <span class="font-semibold text-emerald-500">Creative Advisor</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+             <!-- GMV Source -->
+             <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                 <h3 class="font-bold text-slate-800 dark:text-white mb-2">Direct vs Indirect Sales</h3>
+                 <p class="text-xs text-slate-500 mb-4 text-center">Beli dari video vs Beli lewat profil.</p>
+                 <div class="h-56 w-full flex justify-center"><canvas id="chartGMVType"></canvas></div>
+             </div>
+
+             <!-- Top Tagged Products -->
+             <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
+                 <h3 class="font-bold text-slate-800 dark:text-white mb-4"><i class="fa-solid fa-tags text-indigo-500 mr-2"></i> Most Tagged Products</h3>
+                 <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-sm text-left whitespace-normal">
+                        <thead class="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+                          <tr><th class="px-3 py-2">Rank</th><th class="px-3 py-2">Nama Produk (Potong 15 Kata)</th><th class="px-3 py-2 text-right">Ditag (x)</th></tr>
+                        </thead>
+                        <tbody id="top-tags-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tr><td colspan="3" class="text-center py-8 text-slate-500">Silakan unggah data Excel.</td></tr>
+                        </tbody>
+                    </table>
+                 </div>
+             </div>
+        </div>
+
+        <!-- BEST TIME TO POST ANALYZER -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-6">
+            <div class="flex flex-col md:flex-row justify-between md:items-center mb-6">
+                <div>
+                    <h3 class="font-bold text-slate-800 dark:text-white flex items-center text-lg"><i class="fa-regular fa-clock text-indigo-500 mr-2"></i> Best Time to Post (Heatmap Analisis 24 Jam)</h3>
+                    <p class="text-xs text-slate-500 mt-1">Menganalisis jam upload video yang menghasilkan GMV tertinggi (Data global 24H).</p>
+                </div>
+                <div class="text-sm bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-xl font-bold mt-3 md:mt-0 shadow-sm border border-indigo-100 dark:border-indigo-800" id="best-time-insight">
+                   <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Insight: Belum ada data
+                </div>
+            </div>
+            <div class="h-64 w-full"><canvas id="chartBestTime"></canvas></div>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+          <div class="p-5 border-b border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+              <div>
+                <h3 class="font-bold text-slate-800 dark:text-white text-base flex items-center gap-2">
+                  <i class="fa-solid fa-trophy text-amber-500"></i>
+                  <span>Winning Creatives Leaderboard (Top Revenue Videos)</span>
+                  <span id="leaderboard-active-filter-badge" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">Semua Bulan Upload</span>
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Filter spesifik berdasarkan bulan tanggal video di-upload (<code class="text-[11px] text-indigo-500 dark:text-indigo-400">Waktu Upload</code>) & urutkan berdasarkan metrik performa</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <label class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer select-none hover:border-indigo-400 transition" title="Gabungkan metrik video yang sama jika muncul di beberapa arsip bulanan berbeda">
+                  <input type="checkbox" id="leaderboard-dedup-checkbox" onchange="renderLeaderboardTable()" class="rounded text-indigo-600 focus:ring-indigo-500">
+                  <span>Gabungkan Video Sama Lintas Arsip</span>
+                </label>
+                <button type="button" onclick="resetLeaderboardFilters()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold border border-slate-200 dark:border-slate-700 transition cursor-pointer" title="Reset semua filter leaderboard">
+                  <i class="fa-solid fa-rotate-left mr-1"></i> Reset Filter
+                </button>
+              </div>
+            </div>
+
+            <!-- Control Bar: Upload Month Filter, Pillar Filter (Ide C), Sort Select, Search Input, Row Limit -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5">
+              <div class="lg:col-span-3">
+                <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">
+                  <i class="fa-regular fa-calendar-check text-indigo-500 mr-1"></i> Filter Bulan Upload Video
+                </label>
+                <select id="leaderboard-upload-month-filter" onchange="renderLeaderboardTable()" class="w-full px-3 py-2 text-xs font-bold rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/60 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="all">📅 Semua Bulan Upload (Semua Waktu)</option>
+                </select>
+              </div>
+              <div class="lg:col-span-3">
+                <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">
+                  <i class="fa-solid fa-tags text-blue-500 mr-1"></i> Filter Pilar Produk (Ide C)
+                </label>
+                <select id="leaderboard-pillar-filter" onchange="renderLeaderboardTable()" class="w-full px-3 py-2 text-xs font-bold rounded-xl border border-blue-200 dark:border-blue-800/80 bg-blue-50/60 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="all">🏷️ Semua Pilar Produk</option>
+                </select>
+              </div>
+              <div class="lg:col-span-2">
+                <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">
+                  <i class="fa-solid fa-arrow-down-wide-short text-emerald-500 mr-1"></i> Urutkan (Sort)
+                </label>
+                <select id="leaderboard-sort-select" onchange="renderLeaderboardTable()" class="w-full px-3 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="gmv-desc">💰 GMV Tertinggi (Default)</option>
+                  <option value="vv-desc">▶️ Views (VV) Tertinggi</option>
+                  <option value="order-desc">🛒 Pesanan SKU Terbanyak</option>
+                  <option value="ctr-desc">🎯 CTR Produk (%) Tertinggi</option>
+                  <option value="klik-desc">👆 Klik Produk Terbanyak</option>
+                  <option value="impresi-desc">👁️ Produk Dilihat Tertinggi</option>
+                  <option value="gpm-desc">⚡ GPM (Rp/1K VV) Tertinggi</option>
+                  <option value="ret-desc">⏱️ Retensi Selesai (%) Tertinggi</option>
+                  <option value="date-desc">📅 Tanggal Upload Terbaru</option>
+                  <option value="date-asc">📅 Tanggal Upload Terlama</option>
+                </select>
+              </div>
+              <div class="lg:col-span-2">
+                <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">
+                  <i class="fa-solid fa-magnifying-glass text-sky-500 mr-1"></i> Cari Judul / Produk
+                </label>
+                <input type="text" id="leaderboard-search-input" oninput="renderLeaderboardTable()" placeholder="Ketik kata kunci, #hashtag..." class="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              </div>
+              <div class="lg:col-span-2">
+                <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">
+                  <i class="fa-solid fa-list-ol text-amber-500 mr-1"></i> Tampilkan Baris
+                </label>
+                <select id="leaderboard-limit-select" onchange="renderLeaderboardTable()" class="w-full px-3 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="20">Top 20 Video</option>
+                  <option value="50">Top 50 Video</option>
+                  <option value="100">Top 100 Video</option>
+                  <option value="all">Semua Video</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Quick Upload Month Pills -->
+            <div id="leaderboard-upload-month-pills" class="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5"></div>
+
+            <!-- Mini Summary Bar for Filtered Leaderboard Videos (Ide 1 Opsi C) -->
+            <div id="leaderboard-summary-bar" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1"></div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left whitespace-normal">
+              <thead class="text-xs text-slate-500 uppercase bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+                <tr>
+                  <th class="px-5 py-3">Rank</th>
+                  <th class="px-5 py-3">Informasi Video & Produk Ditag</th>
+                  <th class="px-5 py-3 text-right">Views (VV)</th>
+                  <th class="px-5 py-3 text-right">Produk Dilihat / Klik (CTR)</th>
+                  <th class="px-5 py-3 text-right">Pesanan SKU</th>
+                  <th class="px-5 py-3 text-right">GMV dari Video</th>
+                </tr>
+              </thead>
+              <tbody id="top-videos-sales-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                 <tr><td colspan="6" class="text-center py-8 text-slate-500">Silakan unggah data Excel.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: TO-DOS -->
+      <div id="tab-todos" class="tab-content hidden-tab animate-fade-in">
+        <header class="mb-6 flex flex-col md:flex-row justify-between md:items-end gap-3">
+          <div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white">Workspace & Creative Workflow</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Alur produksi konten tim: dari ide, naskah, kalender jadwal posting, hingga evaluasi personil tim.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Manage Team / Personnel Button -->
+            <button type="button" onclick="openTeamManagerModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold shadow-xs transition flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-user-gear"></i>
+              <span>Kelola Tim / Personil</span>
+              <span id="team-count-badge" class="bg-white/20 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">5</span>
+            </button>
+            <!-- View Switcher -->
+            <div class="inline-flex rounded-xl border border-slate-200 dark:border-slate-700 p-1 bg-white dark:bg-slate-800 text-xs shadow-sm">
+              <button onclick="switchWorkspaceView('kanban')" id="btn-ws-kanban" class="px-3.5 py-1.5 font-bold rounded-lg bg-blue-600 text-white shadow-xs transition flex items-center gap-1.5">
+                <i class="fa-solid fa-table-columns"></i> Kanban Board
+              </button>
+              <button onclick="switchWorkspaceView('calendar')" id="btn-ws-calendar" class="px-3.5 py-1.5 font-bold rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-calendar-days"></i> Kalender Jadwal
+              </button>
+              <button onclick="switchWorkspaceView('scorecard')" id="btn-ws-scorecard" class="px-3.5 py-1.5 font-bold rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-award"></i> Talent Scorecard
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- VIEW 1: KANBAN BOARD -->
+        <div id="workspace-view-kanban" class="workspace-subview">
+          <!-- New Task Form -->
+          <form id="form-todo" class="mb-4 bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row gap-3 items-stretch md:items-end">
+            <div class="flex-1">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Ide / Konsep Konten</label>
+              <input id="todo-title" type="text" required placeholder="Contoh: Perbandingan Powerbank Loop 40W vs 22.5W..." class="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 dark:text-white text-sm">
+            </div>
+            <div class="w-full md:w-44">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Pilar Konten</label>
+              <select id="todo-pillar" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg outline-none text-xs dark:text-white font-medium cursor-pointer">
+                <option value="Charger">🔌 Charger & Fast Charge</option>
+                <option value="Power Bank">🔋 Power Bank</option>
+                <option value="Case">📱 Case & Protection</option>
+                <option value="Tempered Glass">🛡️ Tempered Glass</option>
+                <option value="Promo/Live">🔴 Promo / Live Session</option>
+              </select>
+            </div>
+            <div class="w-full md:w-48">
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-[11px] font-bold text-slate-500 uppercase">Penanggung Jawab</label>
+                <button type="button" onclick="openTeamManagerModal()" class="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-0.5 cursor-pointer" title="Tambah New Joiner atau Edit Nama & Jabatan">
+                  <i class="fa-solid fa-user-plus text-[9px]"></i> + Personil / Edit
+                </button>
+              </div>
+              <select id="todo-assignee" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg outline-none text-xs dark:text-white font-medium cursor-pointer">
+                <option value="Alex (Talent)">Alex (Talent)</option>
+                <option value="Sarah (Script)">Sarah (Script)</option>
+                <option value="Rian (Editor)">Rian (Editor)</option>
+                <option value="Budi (Host)">Budi (Host)</option>
+                <option value="Team (All)">Team (All)</option>
+              </select>
+            </div>
+            <div class="w-full md:w-36">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Prioritas</label>
+              <select id="todo-priority" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg outline-none text-xs dark:text-white font-medium cursor-pointer">
+                <option value="High" class="text-rose-500 font-bold">🔴 High</option>
+                <option value="Medium" selected class="text-amber-500 font-bold">🟡 Medium</option>
+                <option value="Low" class="text-slate-400 font-bold">⚪ Normal</option>
+              </select>
+            </div>
+            <div class="w-full md:w-36">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Due Date</label>
+              <input type="date" id="todo-due" class="w-full px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg outline-none text-xs dark:text-white cursor-pointer font-medium">
+            </div>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm text-sm transition shrink-0 h-[38px] flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-plus"></i> Tambah
+            </button>
+          </form>
+
+          <!-- Filter Kanban per Personil (Ide 2) -->
+          <div class="mb-4 bg-white dark:bg-slate-800 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5" id="kanban-member-filter-bar">
+              <!-- Dynamically rendered by renderKanbanMemberFilterBar() -->
+            </div>
+            <button type="button" onclick="openTeamManagerModal()" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 px-2.5 py-1 rounded-lg transition flex items-center gap-1.5 shrink-0 cursor-pointer">
+              <i class="fa-solid fa-users-gear"></i> Tambah / Edit Jabatan Personil
+            </button>
+          </div>
+
+          <div class="flex overflow-x-auto gap-4 pb-4" id="kanban-board"></div>
+        </div>
+
+        <!-- VIEW 2: CONTENT CALENDAR (SCHEDULE MATRIX) -->
+        <div id="workspace-view-calendar" class="workspace-subview hidden">
+          <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-6">
+            <!-- Calendar Navigation Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-700/60 p-1 rounded-xl">
+                  <button type="button" onclick="prevCalMonth()" class="w-8 h-8 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 rounded-lg transition" title="Bulan Sebelumnya">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                  </button>
+                  <button type="button" onclick="todayCalMonth()" class="px-3 h-8 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-600 rounded-lg transition">
+                    Hari Ini
+                  </button>
+                  <button type="button" onclick="nextCalMonth()" class="w-8 h-8 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 rounded-lg transition" title="Bulan Berikutnya">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                  </button>
+                </div>
+                <h3 class="font-bold text-xl text-slate-800 dark:text-white" id="cal-month-title">Oktober 2026</h3>
+              </div>
+
+              <!-- Posting Gap & Stats Badges -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="cal-total-scheduled" class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 font-bold text-xs rounded-lg border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <i class="fa-solid fa-video text-[11px]"></i> 0 Terjadwal
+                </span>
+                <span id="cal-gap-badge" class="px-3 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold text-xs rounded-lg border border-amber-200 dark:border-amber-800 flex items-center gap-1">
+                  <i class="fa-solid fa-triangle-exclamation text-[11px]"></i> Pantau Jadwal Kosong
+                </span>
+              </div>
+            </div>
+
+            <!-- Calendar Days Header (Senin - Minggu) -->
+            <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">
+              <div class="py-1 text-slate-400">Sen</div>
+              <div class="py-1 text-slate-400">Sel</div>
+              <div class="py-1 text-slate-400">Rab</div>
+              <div class="py-1 text-slate-400">Kam</div>
+              <div class="py-1 text-slate-400">Jum</div>
+              <div class="py-1 text-blue-500 font-extrabold">Sab</div>
+              <div class="py-1 text-rose-500 font-extrabold">Min</div>
+            </div>
+
+            <!-- Calendar Grid Cells -->
+            <div class="grid grid-cols-7 gap-2" id="calendar-grid-cells">
+              <!-- Dynamically rendered by renderCalendarView() -->
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 3: TALENT & TEAM PERFORMANCE SCORECARD -->
+        <div id="workspace-view-scorecard" class="workspace-subview hidden">
+          <!-- Summary Top Banner -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-blue-500">
+              <h4 class="text-xs font-bold text-slate-500 uppercase mb-1">Total Pipeline Tasks</h4>
+              <p class="text-2xl font-bold text-slate-800 dark:text-white" id="sc-total-tasks">0</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-emerald-500">
+              <h4 class="text-xs font-bold text-slate-500 uppercase mb-1">Selesai & Published</h4>
+              <p class="text-2xl font-bold text-emerald-600" id="sc-completed-tasks">0</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-purple-500">
+              <h4 class="text-xs font-bold text-slate-500 uppercase mb-1">On-Time Delivery Rate</h4>
+              <p class="text-2xl font-bold text-purple-600" id="sc-ontime-rate">0%</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm border-l-4 border-l-amber-500">
+              <h4 class="text-xs font-bold text-slate-500 uppercase mb-1">Top Contributor</h4>
+              <p class="text-lg font-bold text-amber-500 truncate" id="sc-star-member">-</p>
+            </div>
+          </div>
+
+          <!-- Team Member Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="team-scorecard-grid">
+            <!-- Dynamically rendered by renderTeamScorecard() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CONTENT LOG -->
+      <div id="tab-content" class="tab-content hidden-tab animate-fade-in">
+        <header class="mb-6 flex justify-between items-end">
+          <div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white">Content Log & Published Archive</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Daftar video yang telah dipublikasikan beserta performa real-time.</p>
+          </div>
+          <button onclick="toggleContentForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition">
+            <i class="fa-solid fa-plus mr-2"></i>Catat Post Baru
+          </button>
+        </header>
+        
+        <div id="content-form-container" class="hidden mb-6 bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm animate-fade-in">
+          <form id="form-content">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div class="col-span-2"><label class="text-xs text-slate-500">Judul / Caption</label><input type="text" id="c-title" required class="w-full mt-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none dark:text-white"></div>
+              <div><label class="text-xs text-slate-500">Tanggal Posting</label><input type="date" id="c-date" required class="w-full mt-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none dark:text-white"></div>
+              <div><label class="text-xs text-slate-500">Pilar Konten</label>
+                <select id="c-pillar" class="w-full mt-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none dark:text-white font-medium cursor-pointer">
+                  <option value="Charger">🔌 Charger</option>
+                  <option value="Power Bank">🔋 Power Bank</option>
+                  <option value="Case">📱 Case</option>
+                  <option value="Tempered Glass">🛡️ Tempered Glass</option>
+                  <option value="Promo/Live">🔴 Promo/Live</option>
+                </select>
+              </div>
+              <div class="col-span-2"><label class="text-xs text-slate-500">Link TikTok</label><input type="url" id="c-link" class="w-full mt-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none dark:text-white" placeholder="https://www.tiktok.com/@rapa_indonesia/video/..."></div>
+              <div><label class="text-xs text-slate-500">Views</label><input type="number" id="c-views" class="w-full mt-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none dark:text-white" placeholder="0"></div>
+              <div><label class="text-xs text-slate-500">Likes</label><input type="number" id="c-likes" class="w-full mt-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm outline-none dark:text-white" placeholder="0"></div>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 font-medium shadow-sm transition">Simpan Log Konten</button>
+          </form>
+        </div>
+
+        <div class="mb-4 relative">
+          <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
+          <input type="text" id="search-log" placeholder="Cari judul video atau hashtag..." onkeyup="renderContents()" class="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-blue-500 shadow-sm text-sm dark:text-white">
+        </div>
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-x-auto shadow-sm">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs uppercase text-slate-500">
+              <tr>
+                <th class="px-5 py-3">Video & Pilar</th>
+                <th class="px-5 py-3">Tanggal & Kreator</th>
+                <th class="px-5 py-3 text-right">Metrics (Views/Likes)</th>
+                <th class="px-5 py-3 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="content-table-body" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Edit Task, Handover Personil & Script/Notes (Ide 2) -->
+  <div id="modal-note" class="fixed inset-0 bg-slate-900/60 hidden z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-xl shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-800 dark:text-white">Edit Detail Tugas, Handover PIC & Script</h3>
+            <p class="text-[11px] text-slate-400">Ubah penanggung jawab (re-assign), jadwal tayang, prioritas, atau naskah konten.</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 mb-5">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Judul / Konsep Konten</label>
+          <input type="text" id="modal-task-title" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3.5 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white font-semibold">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase">Penanggung Jawab (PIC)</label>
+              <button type="button" onclick="closeModal(); openTeamManagerModal();" class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">+ Kelola Tim</button>
+            </div>
+            <select id="modal-task-assignee" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 dark:text-white font-semibold cursor-pointer"></select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Stage / Tahap Produksi</label>
+            <select id="modal-task-stage" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 dark:text-white font-semibold cursor-pointer">
+              <option value="Ideas">Ideas</option>
+              <option value="Scripting">Scripting</option>
+              <option value="Filming">Filming</option>
+              <option value="Editing">Editing</option>
+              <option value="Ready to Post">Ready to Post</option>
+              <option value="Published">Published</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Pilar Konten</label>
+            <select id="modal-task-pillar" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs outline-none dark:text-white font-medium cursor-pointer">
+              <option value="Charger">🔌 Charger</option>
+              <option value="Power Bank">🔋 Power Bank</option>
+              <option value="Case">📱 Case</option>
+              <option value="Tempered Glass">🛡️ Tempered Glass</option>
+              <option value="Promo/Live">🔴 Promo/Live</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Prioritas</label>
+            <select id="modal-task-priority" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-xs outline-none dark:text-white font-medium cursor-pointer">
+              <option value="High">🔴 High</option>
+              <option value="Medium">🟡 Medium</option>
+              <option value="Low">⚪ Normal</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Due Date</label>
+            <input type="date" id="modal-task-due" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-1.5 text-xs outline-none dark:text-white font-medium cursor-pointer">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Script / Hook / Brief Produksi</label>
+          <textarea id="modal-textarea" rows="5" placeholder="Tulis naskah hook 3 detik pertama, poin demonstrasi produk, atau catatan revisi editor..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-700">
+        <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition cursor-pointer">Batal</button>
+        <button type="button" onclick="saveNote()" class="px-5 py-2 text-xs bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-extrabold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Kelola Tim & Personil (Opsi C: Ide 1, 2, 3) -->
+  <div id="modal-team-manager" class="fixed inset-0 bg-slate-900/75 hidden z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden my-6">
+      <!-- Top Header -->
+      <div class="bg-slate-900 text-white px-6 py-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-400/40 text-indigo-400 flex items-center justify-center text-lg shadow-xs">
+            <i class="fa-solid fa-users-gear"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-extrabold text-base tracking-tight">Kelola Personil & Struktur Tim Kreatif</h3>
+              <span id="tm-brand-badge" class="bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-[10px] font-black uppercase px-2 py-0.5 rounded-full">RAPAtech</span>
+            </div>
+            <p class="text-xs text-slate-400">Tambah personil baru (New Joiner), ubah Nama & Jabatan custom, atau atur target kuota video bulanan.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="copyTeamFromOtherBrand()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer" title="Salin daftar personil dari brand sebelahnya">
+            <i class="fa-solid fa-copy text-indigo-400"></i>
+            <span id="tm-copy-brand-label">Salin Tim dari Brand 2</span>
+          </button>
+          <button type="button" onclick="closeTeamManagerModal()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition cursor-pointer">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+        <!-- Add / Edit Member Form -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center justify-between mb-3">
+            <h4 id="tm-form-title" class="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-user-plus"></i> Tambah Personil Baru (New Joiner)
+            </h4>
+            <button type="button" id="tm-cancel-edit-btn" onclick="resetTeamMemberForm()" class="hidden text-[11px] font-bold text-rose-500 hover:underline cursor-pointer">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Batal Edit (Mode Tambah Baru)
+            </button>
+          </div>
+
+          <input type="hidden" id="tm-edit-id" value="">
+
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+            <div class="sm:col-span-4">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Nama Personil *</label>
+              <input type="text" id="tm-inp-name" placeholder="Contoh: Kevin / Nadia / Alex" class="w-full px-3.5 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 text-xs font-semibold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="sm:col-span-4">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Jabatan / Role Custom *</label>
+              <input type="text" id="tm-inp-role" placeholder="Contoh: Talent / Video Editor / Host" class="w-full px-3.5 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 text-xs font-semibold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Warna & Ikon</label>
+              <select id="tm-inp-color" class="w-full px-2.5 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 text-xs font-semibold dark:text-white outline-none cursor-pointer">
+                <option value="blue">🔵 Biru (Creator)</option>
+                <option value="purple">🟣 Ungu (Script)</option>
+                <option value="emerald">🟢 Hijau (Editor)</option>
+                <option value="amber">🟡 Amber (Host)</option>
+                <option value="rose">🔴 Rose (Ads/Lead)</option>
+                <option value="cyan">🩵 Cyan (Team)</option>
+                <option value="indigo">indigo (Specialist)</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1" title="Target jumlah video Published per bulan untuk personil ini">Kuota / Bln</label>
+              <input type="number" id="tm-inp-quota" min="1" max="200" value="10" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-600 text-xs font-bold dark:text-white outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+          </div>
+
+          <!-- Quick Role Preset Chips -->
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-slate-200/70 dark:border-slate-700/70">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[10px] font-bold text-slate-400 mr-1">Klik Cepat Jabatan:</span>
+              <button type="button" onclick="applyRolePreset('Talent', 'blue')" class="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-bold hover:bg-blue-100 transition cursor-pointer">🎭 Talent</button>
+              <button type="button" onclick="applyRolePreset('Script', 'purple')" class="px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-[10px] font-bold hover:bg-purple-100 transition cursor-pointer">✍️ Script</button>
+              <button type="button" onclick="applyRolePreset('Editor', 'emerald')" class="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[10px] font-bold hover:bg-emerald-100 transition cursor-pointer">🎬 Editor</button>
+              <button type="button" onclick="applyRolePreset('Host', 'amber')" class="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-[10px] font-bold hover:bg-amber-100 transition cursor-pointer">🎙️ Host</button>
+              <button type="button" onclick="applyRolePreset('Videographer', 'indigo')" class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[10px] font-bold hover:bg-indigo-100 transition cursor-pointer">🎥 Videographer</button>
+              <button type="button" onclick="applyRolePreset('Social Media', 'rose')" class="px-2 py-0.5 rounded bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-[10px] font-bold hover:bg-rose-100 transition cursor-pointer">📱 Social Media</button>
+              <button type="button" onclick="applyRolePreset('All', 'cyan')" class="px-2 py-0.5 rounded bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800 text-[10px] font-bold hover:bg-cyan-100 transition cursor-pointer">👥 All Team</button>
+            </div>
+            <button type="button" id="tm-submit-btn" onclick="saveTeamMemberFromModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold shadow-xs transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-plus"></i> Simpan Personil
+            </button>
+          </div>
+        </div>
+
+        <!-- Active Personnel List -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-id-badge text-indigo-500"></i> Daftar Personil Aktif
+            </h4>
+            <span class="text-[11px] text-slate-400">Klik <strong>Edit</strong> untuk mengganti Nama/Jabatan (otomatis memperbarui seluruh kartu Kanban)</span>
+          </div>
+          <div id="tm-roster-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Dynamically populated by renderTeamManagerModal() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <span class="text-[11px] text-slate-400"><i class="fa-solid fa-circle-info mr-1 text-indigo-400"></i> Tersimpan otomatis di database brand aktif & ikut ter-backup di file .JSON.</span>
+        <button type="button" onclick="closeTeamManagerModal()" class="px-4 py-2 rounded-xl bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold hover:bg-slate-800 transition cursor-pointer">Selesai & Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Set Target KPI -->
+  <div id="modal-target" class="fixed inset-0 bg-slate-900/50 hidden z-50 flex items-center justify-center animate-fade-in backdrop-blur-sm">
+    <div class="bg-white dark:bg-slate-800 rounded-xl p-6 w-[90%] max-w-md shadow-2xl border border-slate-200 dark:border-slate-700">
+      <h3 class="font-bold text-lg text-slate-800 dark:text-white mb-4"><i class="fa-solid fa-bullseye text-rose-500 mr-2"></i> Set Monthly Targets</h3>
+      <div class="space-y-4 mb-6">
+        <div>
+           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Target GMV (Rp)</label>
+           <input type="number" id="inp-target-gmv" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 dark:text-white text-sm" placeholder="Contoh: 100000000">
+        </div>
+        <div>
+           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Target Video Views</label>
+           <input type="number" id="inp-target-views" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 dark:text-white text-sm" placeholder="Contoh: 5000000">
+        </div>
+        <div>
+           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Target CTR Produk (%) — <span class="text-[10px] font-normal text-slate-400">Klik ÷ Impresi × 100%</span></label>
+           <input type="number" step="0.01" id="inp-target-ctr" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 dark:text-white text-sm" placeholder="Contoh: 6.0">
+        </div>
+        <div>
+           <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Target New Followers</label>
+           <input type="number" id="inp-target-followers" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 dark:text-white text-sm" placeholder="Contoh: 10000">
+        </div>
+      </div>
+      <div class="flex justify-end gap-3"><button onclick="closeTargetModal()" class="px-4 py-2 text-sm text-slate-500 font-medium hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Cancel</button><button onclick="saveTargets()" class="px-5 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm transition">Save Targets</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Pengaturan Multi-Brand (Edit Nama, Handle & 5 Pilar Produk Kustom 2 Brand — Ide A) -->
+  <div id="modal-brand-settings" class="fixed inset-0 bg-slate-900/60 hidden z-50 flex items-center justify-center animate-fade-in backdrop-blur-sm p-4 overflow-y-auto" onclick="if(event.target === this) closeBrandSettingsModal()">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-3xl shadow-2xl border border-slate-200 dark:border-slate-700 my-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+        <div>
+          <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-building-flag text-blue-500"></i> Pengaturan Profil & Pilar Produk Multi-Brand
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Kustomisasi nama, akun TikTok, serta 5 Pilar Kategori Produk & Kata Kunci Deteksi Otomatis masing-masing brand.</p>
+        </div>
+        <button onclick="closeBrandSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+        <!-- Brand 1 Config -->
+        <div class="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 dark:text-blue-300 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span> Konfigurasi Brand 1
+            </span>
+            <button type="button" onclick="resetBrandPillarsToDefault('brand_1')" class="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer" title="Kembalikan 5 pilar Brand 1 ke default RAPAtech">
+              <i class="fa-solid fa-rotate-left mr-0.5"></i> Reset Pilar Default
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Nama Brand 1</label>
+              <input type="text" id="inp-brand1-name" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs font-semibold dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: RAPAtech">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Username TikTok</label>
+              <input type="text" id="inp-brand1-handle" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs dark:text-white outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: @rapa_indonesia">
+            </div>
+          </div>
+          <div class="pt-2 border-t border-blue-200/60 dark:border-blue-800/50">
+            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-blue-700 dark:text-blue-300 mb-2">
+              <i class="fa-solid fa-layer-group mr-1"></i> 5 Pilar Produk & Kata Kunci Deteksi (Brand 1)
+            </label>
+            <div id="brand1-pillars-editor" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- Brand 2 Config -->
+        <div class="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Konfigurasi Brand 2
+            </span>
+            <button type="button" onclick="resetBrandPillarsToDefault('brand_2')" class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer" title="Kembalikan 5 pilar Brand 2 ke default MONTRA (Casing Clear, Leather, Orbit, TG)">
+              <i class="fa-solid fa-rotate-left mr-0.5"></i> Reset Pilar MONTRA
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Nama Brand 2</label>
+              <input type="text" id="inp-brand2-name" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs font-semibold dark:text-white outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Contoh: MONTRA">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Username TikTok</label>
+              <input type="text" id="inp-brand2-handle" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-xs dark:text-white outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Contoh: @montra_id">
+            </div>
+          </div>
+          <div class="pt-2 border-t border-emerald-200/60 dark:border-emerald-800/50">
+            <label class="block text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 mb-2">
+              <i class="fa-solid fa-layer-group mr-1"></i> 5 Pilar Produk & Kata Kunci Deteksi (Brand 2)
+            </label>
+            <div id="brand2-pillars-editor" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ide 1 & Ide 3: Vercel Cloud Seed & Workspace PIN Protection -->
+      <div class="mb-5 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700/80 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        <div class="md:col-span-7 space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-wider">Vercel Security Gate</span>
+            <h4 class="text-xs font-extrabold text-slate-800 dark:text-white flex items-center gap-1.5">
+              <i class="fa-solid fa-shield-lock text-amber-500"></i> Proteksi PIN Workspace (Opsional untuk URL Publik Vercel)
+            </h4>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            Aktifkan PIN agar pengunjung luar yang membuka link <code class="px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-800 font-mono text-[10px]">.vercel.app</code> Anda harus memasukkan PIN tim sebelum bisa melihat data GMV RAPAtech &amp; MONTRA.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 pt-1">
+            <label class="inline-flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer select-none">
+              <input type="checkbox" id="inp-workspace-pin-enabled" class="rounded text-amber-500 focus:ring-amber-500 w-4 h-4 cursor-pointer">
+              <span>Aktifkan Kunci PIN saat Buka Link</span>
+            </label>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-bold uppercase text-slate-400">Kode PIN:</span>
+              <input type="password" id="inp-workspace-pin-code" maxlength="12" placeholder="Contoh: 2026" class="w-28 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs font-mono font-bold dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+              <button type="button" onclick="const el=document.getElementById('inp-workspace-pin-code'); el.type = el.type==='password'?'text':'password';" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-1.5" title="Lihat/Sembunyikan PIN">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="md:col-span-5 p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between gap-2">
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block">
+              <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Vercel Auto-Seed Snapshot
+            </span>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              Simpan data saat ini menjadi <code class="font-mono text-[10px]">data/initial_workspace.json</code> di project Vercel agar semua HP/laptop baru otomatis terisi data terbaru.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="exportCloudSeedJSON()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold py-1.5 px-2.5 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-file-code"></i> Download initial_workspace.json
+            </button>
+            <button type="button" onclick="lockWorkspaceNow()" class="bg-slate-200 dark:bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:text-slate-200 text-[11px] font-bold py-1.5 px-2.5 rounded-lg transition flex items-center gap-1 cursor-pointer" title="Kunci layar sekarang">
+              <i class="fa-solid fa-lock"></i> Kunci
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+        <span class="text-[11px] text-slate-400"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1"></i> Menyimpan pengaturan akan otomatis mengklasifikasikan ulang pilar seluruh video sesuai kata kunci terbaru.</span>
+        <div class="flex items-center gap-2.5">
+          <button onclick="closeBrandSettingsModal()" class="px-4 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition">Batal</button>
+          <button onclick="saveBrandSettings()" class="px-5 py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-check"></i> Simpan Profil & Pilar Brand
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Monthly Data Vault (Arsip Bulanan & Pengaman Batas 60 Hari Tokopedia / TikTok Shop Seller Center) -->
+  <div id="modal-monthly-vault" class="fixed inset-0 bg-slate-900/65 hidden z-50 flex items-center justify-center animate-fade-in backdrop-blur-sm overflow-y-auto p-4" onclick="if(event.target === this) closeMonthlyVaultModal()">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-5xl shadow-2xl border border-slate-200 dark:border-slate-800 my-8 overflow-hidden">
+      <!-- Vault Header -->
+      <div class="p-6 bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-emerald-900/50">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <span class="bg-emerald-500 text-slate-950 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider">Monthly Data Vault</span>
+            <span class="text-xs text-emerald-300 font-semibold" id="vault-brand-subtitle">RAPAtech Indonesia (@rapa_indonesia)</span>
+          </div>
+          <h2 class="text-xl md:text-2xl font-black tracking-tight flex items-center gap-2">
+            <i class="fa-solid fa-vault text-emerald-400"></i> Brankas Arsip Data Bulanan (Solusi Batas 60 Hari Seller Center)
+          </h2>
+          <p class="text-xs text-slate-300 mt-1">Simpan, kunci (🔒 Lock), dan backup data bulanan Tokopedia & TikTok Shop Seller Center agar data >60 hari tetap tersimpan permanen.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <button onclick="exportWorkspaceJSON()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5" title="Download seluruh arsip semua bulan & semua brand ke file .json">
+            <i class="fa-solid fa-download"></i> Backup Semua Bulan (.JSON)
+          </button>
+          <button onclick="exportCloudSeedJSON()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs px-3.5 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5" title="Download initial_workspace.json untuk ditaruh di folder /data/ Vercel agar otomatis dimuat di semua device tim">
+            <i class="fa-solid fa-cloud-arrow-down"></i> Export Vercel Seed (initial_workspace.json)
+          </button>
+          <button onclick="document.getElementById('vault-smart-restore-input').click()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-md transition flex items-center gap-1.5" title="Gabungkan (Smart Merge) file backup bulan tertentu tanpa menghapus bulan yang sudah ada">
+            <i class="fa-solid fa-file-import"></i> Gabungkan File Arsip (.JSON)
+          </button>
+          <input type="file" id="vault-smart-restore-input" class="hidden" accept=".json" onchange="importVaultSmartMergeJSON(event)">
+          <button onclick="closeMonthlyVaultModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs px-3 py-2.5 rounded-xl transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Vault Body -->
+      <div class="p-6 space-y-6 max-h-[80vh] overflow-y-auto text-slate-800 dark:text-slate-100">
+        <!-- 60-Day Seller Center Protection Info + Quick Month Upload Hub -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div class="lg:col-span-5 p-4 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-1.5">
+                <i class="fa-solid fa-shield-halved text-amber-500 text-base"></i>
+                <h4 class="text-xs font-black uppercase tracking-wider text-amber-800 dark:text-amber-300">Mengapa Brankas Bulanan Ini Penting?</h4>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Tokopedia & TikTok Shop Seller Center membatasi penarikan data maksimal <strong>60 hari ke belakang</strong>. Dengan mengunggah file tiap bulan ke sini:
+              </p>
+              <ul class="text-[11px] text-slate-600 dark:text-slate-300 mt-2 space-y-1 list-disc list-inside font-medium">
+                <li>Data bulan lalu otomatis digabungkan (<strong>Smart Merge</strong>) tanpa batas bulan (12–24+ bulan).</li>
+                <li>Gunakan tombol <strong>🔒 Kunci Bulan (Lock)</strong> agar data bulan yang sudah lewat 60 hari tidak bisa tertimpa atau terhapus.</li>
+                <li>Unduh <strong>Snapshot .JSON</strong> per bulan sebagai cadangan abadi di laptop/Google Drive tim.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Quick Upload Center Per Bulan (5 Tipe File Excel) -->
+          <div class="lg:col-span-7 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+            <div>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200 dark:border-slate-700">
+                <div>
+                  <h4 class="text-xs font-black uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i> Upload Cepat File Excel ke Bulan Tertentu
+                  </h4>
+                  <p class="text-[11px] text-slate-500">Pilih target bulan arsip, lalu klik jenis file Excel dari Seller Center yang ingin ditambahkan.</p>
+                </div>
+                <div class="flex items-center gap-1.5 bg-white dark:bg-slate-900 px-2.5 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 shrink-0">
+                  <span class="text-[10px] font-bold text-slate-500 uppercase">Target Bulan:</span>
+                  <input type="month" id="vault-quick-target-month" onchange="syncVaultTargetMonth(this.value)" class="bg-transparent text-xs font-extrabold text-emerald-600 dark:text-emerald-400 outline-none cursor-pointer">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <button type="button" onclick="triggerUploadFromVault('overview')" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-700 hover:border-blue-400 transition text-left flex flex-col justify-between group">
+                  <i class="fa-solid fa-chart-line text-blue-500 text-sm mb-1.5"></i>
+                  <div>
+                    <span class="text-[11px] font-bold text-slate-800 dark:text-white block group-hover:text-blue-600">1. Overview</span>
+                    <span class="text-[9px] text-slate-400 block">Views, Reach, Fol</span>
+                  </div>
+                </button>
+                <button type="button" onclick="triggerUploadFromVault('audience')" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-slate-200 dark:border-slate-700 hover:border-purple-400 transition text-left flex flex-col justify-between group">
+                  <i class="fa-solid fa-users text-purple-500 text-sm mb-1.5"></i>
+                  <div>
+                    <span class="text-[11px] font-bold text-slate-800 dark:text-white block group-hover:text-purple-600">2. Audience</span>
+                    <span class="text-[9px] text-slate-400 block">Engaged & Reach</span>
+                  </div>
+                </button>
+                <button type="button" onclick="triggerUploadFromVault('video')" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition text-left flex flex-col justify-between group">
+                  <i class="fa-solid fa-video text-indigo-500 text-sm mb-1.5"></i>
+                  <div>
+                    <span class="text-[11px] font-bold text-slate-800 dark:text-white block group-hover:text-indigo-600">3. Video Perf</span>
+                    <span class="text-[9px] text-slate-400 block">Qty Video (#)</span>
+                  </div>
+                </button>
+                <button type="button" onclick="triggerUploadFromVault('vc-summary')" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 hover:border-emerald-400 transition text-left flex flex-col justify-between group">
+                  <i class="fa-solid fa-layer-group text-emerald-500 text-sm mb-1.5"></i>
+                  <div>
+                    <span class="text-[11px] font-bold text-slate-800 dark:text-white block group-hover:text-emerald-600">4. V&C Summary</span>
+                    <span class="text-[9px] text-slate-400 block">GMV & CTR Harian</span>
+                  </div>
+                </button>
+                <button type="button" onclick="triggerUploadFromVault('product')" class="p-2.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-teal-50 dark:hover:bg-teal-950/40 border border-slate-200 dark:border-slate-700 hover:border-teal-400 transition text-left flex flex-col justify-between group col-span-2 sm:col-span-1">
+                  <i class="fa-solid fa-bag-shopping text-teal-500 text-sm mb-1.5"></i>
+                  <div>
+                    <span class="text-[11px] font-bold text-slate-800 dark:text-white block group-hover:text-teal-600">5. Produk & Sales</span>
+                    <span class="text-[9px] text-slate-400 block">Sales Per-Video</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div class="mt-3 pt-2 border-t border-slate-200/70 dark:border-slate-700/70 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+              <span class="text-slate-500"><i class="fa-solid fa-code-merge text-emerald-500 mr-1"></i> Tanggal yang beririsan dari tarikan 60 hari otomatis dideduplikasi (tidak dobel hitung).</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400" id="vault-total-months-summary">0 Bulan Tersimpan</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Archive Cards Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-calendar-check text-emerald-500"></i> Daftar Arsip Bulan Tersimpan & Status Kelengkapan 5 File
+            </h3>
+            <button type="button" onclick="loadSampleMultiMonthData(); renderMonthlyVaultModal();" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Arsip 2 Bulan (Sep & Okt)
+            </button>
+          </div>
+          <div id="vault-months-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Populated dynamically via renderMonthlyVaultModal() -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Laporan Eksekutif (Print / PDF Ready) -->
+  <div id="modal-executive-report" class="fixed inset-0 bg-slate-900/60 hidden z-50 flex items-center justify-center animate-fade-in backdrop-blur-sm overflow-y-auto p-4" onclick="if(event.target === this) closeExecutiveReportModal()">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-4xl shadow-2xl border border-slate-200 dark:border-slate-800 my-8 overflow-hidden" id="printable-report-area">
+      <!-- Report Header -->
+      <div class="p-6 md:p-8 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-slate-800">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <span class="bg-blue-500 text-white text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider" id="rep-mode-badge">Executive Summary</span>
+            <span class="bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider" id="rep-period-badge">Overall (Semua Bulan)</span>
+            <span class="text-xs text-indigo-300 font-medium" id="rep-brand-subtitle">RAPAtech Indonesia (@rapa_indonesia)</span>
+          </div>
+          <h2 class="text-2xl font-black tracking-tight">Content Creation & Sales Performance Report</h2>
+          <p class="text-xs text-slate-300 mt-1" id="rep-generated-date">Dicetak pada: 17 Oktober 2026</p>
+        </div>
+        <div class="no-print flex flex-wrap items-center gap-2">
+          <select id="rep-brand-select" onchange="switchBrand(this.value, false); openExecutiveReportModal(true);" class="bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 outline-none cursor-pointer" title="Pilih Brand Laporan">
+            <option value="brand_1" id="rep-opt-brand_1">Brand 1: RAPAtech</option>
+            <option value="brand_2" id="rep-opt-brand_2">Brand 2: MONTRA</option>
+            <option value="all">🏢 Holding (Gabungan 2 Brand)</option>
+          </select>
+          <select id="rep-period-select" onchange="renderExecutiveReportContent()" class="bg-indigo-950 text-indigo-100 text-xs font-extrabold px-3 py-2 rounded-xl border border-indigo-500/60 outline-none cursor-pointer" title="Pilih Periode Laporan: Overall (Semua Bulan) atau Bulan Spesifik">
+            <option value="all">🌐 Overall (Semua Bulan)</option>
+          </select>
+          <button onclick="printExecutiveReport()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition flex items-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+          </button>
+          <button onclick="closeExecutiveReportModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs px-3 py-2.5 rounded-xl transition cursor-pointer">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Report Body -->
+      <div class="p-6 md:p-8 space-y-6 text-slate-800 dark:text-slate-100">
+        <!-- Active Report Period Summary Banner -->
+        <div id="rep-period-info-banner" class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-calendar-check text-indigo-600 dark:text-indigo-400"></i>
+            <span id="rep-period-info-text" class="font-bold text-slate-700 dark:text-slate-200">Cakupan Laporan: Overall (Semua Bulan)</span>
+          </div>
+          <span id="rep-period-days-pill" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">0 Hari Aktif</span>
+        </div>
+
+        <!-- Multi-Brand Comparison Block inside Executive Report -->
+        <div id="rep-holding-comparison-block">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Komparasi Head-to-Head Multi-Brand (Brand 1 vs Brand 2)</h4>
+            <span class="text-[10px] font-semibold text-slate-400" id="rep-holding-period-sub">Sesuai periode laporan yang dipilih</span>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 dark:bg-slate-800 font-bold uppercase text-slate-600 dark:text-slate-400">
+                <tr>
+                  <th class="px-3.5 py-2">Brand</th>
+                  <th class="px-3.5 py-2 text-right">GMV (Rp)</th>
+                  <th class="px-3.5 py-2 text-right">Share GMV</th>
+                  <th class="px-3.5 py-2 text-right">Pesanan SKU</th>
+                  <th class="px-3.5 py-2 text-right">Impresi Produk</th>
+                  <th class="px-3.5 py-2 text-right">Klik Produk</th>
+                  <th class="px-3.5 py-2 text-right">CTR (%)</th>
+                  <th class="px-3.5 py-2 text-right">Qty Video (#)</th>
+                </tr>
+              </thead>
+              <tbody id="rep-holding-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- 8 Core KPIs Snapshot -->
+        <div>
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">1. Ringkasan Eksekutif (Key Performance Indicators)</h4>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Total GMV</span>
+              <span class="text-base font-black text-emerald-600" id="rep-gmv">Rp 0</span>
+              <div id="rep-mom-gmv" class="mt-0.5"></div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Pesanan SKU</span>
+              <span class="text-base font-black text-slate-800 dark:text-white" id="rep-orders">0</span>
+              <div id="rep-mom-orders" class="mt-0.5"></div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">CTR Produk (%)</span>
+              <span class="text-base font-black text-amber-500" id="rep-ctr">0%</span>
+              <div id="rep-mom-ctr" class="mt-0.5"></div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Qty Video (#)</span>
+              <span class="text-base font-black text-pink-600" id="rep-qtyvideo">0</span>
+              <div id="rep-mom-qtyvideo" class="mt-0.5"></div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Total Video Views</span>
+              <span class="text-base font-black text-blue-600" id="rep-views">0</span>
+              <div id="rep-mom-views" class="mt-0.5"></div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Jangkauan (Reach)</span>
+              <span class="text-base font-black text-cyan-600" id="rep-reach">0</span>
+              <div id="rep-mom-reach" class="mt-0.5"></div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Engagement Rate</span>
+              <span class="text-base font-black text-purple-600" id="rep-er">0%</span>
+              <div id="rep-mom-er" class="mt-0.5"></div>
+            </div>
+            <div class="p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/60">
+              <span class="text-[10px] font-bold text-slate-500 uppercase block">Rata-rata GPM</span>
+              <span class="text-base font-black text-rose-500" id="rep-gpm">Rp 0</span>
+              <div id="rep-mom-gpm" class="mt-0.5"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Month-over-Month (MoM) Growth Comparison Section in Executive Report PDF -->
+        <div id="rep-mom-comparison-block">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2.5">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-arrow-trend-up text-emerald-500"></i> Pertumbuhan Bulanan (Month-over-Month / MoM Growth)
+            </h4>
+            <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400" id="rep-mom-period-label">Perbandingan Bulan Terbaru vs Bulan Sebelumnya</span>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 dark:bg-slate-800 font-bold uppercase text-slate-600 dark:text-slate-400">
+                <tr>
+                  <th class="px-3.5 py-2">Metrik Utama</th>
+                  <th class="px-3.5 py-2 text-right" id="rep-mom-th-prev">Bulan Lalu</th>
+                  <th class="px-3.5 py-2 text-right text-blue-600 dark:text-blue-400" id="rep-mom-th-curr">Bulan Ini</th>
+                  <th class="px-3.5 py-2 text-right">Selisih (Δ)</th>
+                  <th class="px-3.5 py-2 text-right">MoM Growth (%)</th>
+                </tr>
+              </thead>
+              <tbody id="rep-mom-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td colspan="5" class="text-center py-3 text-slate-400">Upload minimal 2 bulan data (misal: September & Oktober) untuk laporan MoM otomatis.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Month-by-Month Breakdown Table in Executive Report PDF (Ide C — Overall Mode) -->
+        <div id="rep-monthly-breakdown-block" class="hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2.5">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-calendar-week text-indigo-500"></i> Rekap Performa Bulan-per-Bulan (Monthly Breakdown — Overall Mode)
+            </h4>
+            <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">Rincian Kontribusi Setiap Bulan Kalender</span>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 dark:bg-slate-800 font-bold uppercase text-slate-600 dark:text-slate-400">
+                <tr>
+                  <th class="px-3.5 py-2">Bulan Kalender</th>
+                  <th class="px-3.5 py-2 text-right">Hari Aktif</th>
+                  <th class="px-3.5 py-2 text-right">Total GMV (Rp)</th>
+                  <th class="px-3.5 py-2 text-right">Rata-Rata GMV/Hari</th>
+                  <th class="px-3.5 py-2 text-right">Pesanan SKU</th>
+                  <th class="px-3.5 py-2 text-right">Impresi / Klik (CTR)</th>
+                  <th class="px-3.5 py-2 text-right">Total Views</th>
+                </tr>
+              </thead>
+              <tbody id="rep-monthly-breakdown-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Video & Carousel Summary Section in Executive Report PDF -->
+        <div>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
+            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">2. Ringkasan Video & Carousel Summary (5 Metrik Utama & Hari Terbaik)</h4>
+            <span class="text-[10px] text-slate-400 font-medium">Rumus CTR (%) = Jumlah Klik Produk ÷ Jumlah Impresi Produk × 100%</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-3">
+            <div class="p-3 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-xl border border-emerald-200 dark:border-emerald-800/60">
+              <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase block">1. GMV</span>
+              <span class="text-sm font-black text-emerald-600 dark:text-emerald-400" id="rep-vc-gmv">Rp 0</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5" id="rep-vc-gmv-sub">Direct & Indirect</span>
+            </div>
+            <div class="p-3 bg-indigo-50/60 dark:bg-indigo-950/30 rounded-xl border border-indigo-200 dark:border-indigo-800/60">
+              <span class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase block">2. Pesanan SKU</span>
+              <span class="text-sm font-black text-slate-800 dark:text-white" id="rep-vc-sku">0</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5" id="rep-vc-sku-sub">Total Teratribusi</span>
+            </div>
+            <div class="p-3 bg-sky-50/60 dark:bg-sky-950/30 rounded-xl border border-sky-200 dark:border-sky-800/60">
+              <span class="text-[10px] font-bold text-sky-700 dark:text-sky-300 uppercase block">3. Impresi Produk</span>
+              <span class="text-sm font-black text-sky-600 dark:text-sky-400" id="rep-vc-impresi">0</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5">Tayangan Produk</span>
+            </div>
+            <div class="p-3 bg-amber-50/60 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800/60">
+              <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase block">4. CTR (%)</span>
+              <span class="text-sm font-black text-amber-500" id="rep-vc-ctr">0.00%</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5" id="rep-vc-ctor-sub">CTOR: 0.00%</span>
+            </div>
+            <div class="p-3 bg-blue-50/60 dark:bg-blue-950/30 rounded-xl border border-blue-200 dark:border-blue-800/60">
+              <span class="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase block">5. Klik Produk</span>
+              <span class="text-sm font-black text-blue-600 dark:text-blue-400" id="rep-vc-klik">0</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5">Klik Keranjang</span>
+            </div>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 dark:bg-slate-800 font-bold uppercase text-slate-600 dark:text-slate-400">
+                <tr>
+                  <th class="px-3.5 py-2">Highlight Tanggal</th>
+                  <th class="px-3.5 py-2 text-right">GMV (Rp)</th>
+                  <th class="px-3.5 py-2 text-right">Pesanan SKU</th>
+                  <th class="px-3.5 py-2 text-right">Impresi Produk</th>
+                  <th class="px-3.5 py-2 text-right">CTR (%)</th>
+                  <th class="px-3.5 py-2 text-right">Klik Produk</th>
+                </tr>
+              </thead>
+              <tbody id="rep-vc-topdays-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td colspan="6" class="text-center py-3 text-slate-400">Belum ada data harian Video & Carousel</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pillar Performance Table -->
+        <div>
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">3. Kontribusi Revenue per Pilar Konten</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 dark:bg-slate-800 font-bold uppercase text-slate-600 dark:text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">Pilar Produk</th>
+                  <th class="px-4 py-2.5 text-right">Jumlah Video</th>
+                  <th class="px-4 py-2.5 text-right">Total Views</th>
+                  <th class="px-4 py-2.5 text-right">Total GMV (Rp)</th>
+                  <th class="px-4 py-2.5 text-right">Share of Revenue (%)</th>
+                </tr>
+              </thead>
+              <tbody id="rep-pillar-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td colspan="5" class="text-center py-4 text-slate-400">Belum ada data pilar</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Top 5 Winning Creatives -->
+        <div>
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">4. Top 5 Winning Videos (Highest Revenue Creatives)</h4>
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-100 dark:bg-slate-800 font-bold uppercase text-slate-600 dark:text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">Rank</th>
+                  <th class="px-4 py-2.5">Judul Video</th>
+                  <th class="px-4 py-2.5">Pilar</th>
+                  <th class="px-4 py-2.5 text-right">Views</th>
+                  <th class="px-4 py-2.5 text-right">Orders</th>
+                  <th class="px-4 py-2.5 text-right">GMV Dihasilkan</th>
+                </tr>
+              </thead>
+              <tbody id="rep-top5-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td colspan="6" class="text-center py-4 text-slate-400">Belum ada video sales</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Actionable Recommendations & Timing -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="p-4 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl border border-blue-200 dark:border-blue-900/50">
+            <h5 class="text-xs font-bold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-1.5">
+              <i class="fa-regular fa-clock"></i> Rekomendasi Jam Tayang Utama
+            </h5>
+            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed" id="rep-timing-text">
+              Analisis heatmap menunjukkan slot posting terbaik berdasarkan konversi GMV aktual.
+            </p>
+          </div>
+          <div class="p-4 bg-emerald-50/70 dark:bg-emerald-950/30 rounded-xl border border-emerald-200 dark:border-emerald-900/50">
+            <h5 class="text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check"></i> Rencana Aksi Kreatif Tim Minggu Depan
+            </h5>
+            <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 list-disc pl-4" id="rep-action-plan">
+              <li>Pertahankan formula hook video winning pada pilar teratas.</li>
+              <li>Perbaiki CTA dan penawaran diskon voucher pada video ber-retensi tinggi.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Footer (Print only signature / approval area) -->
+      <div class="p-6 bg-slate-50 dark:bg-slate-800/40 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500">
+        <div>
+          <span>Dibuat secara otomatis oleh <strong>Dework Space Analytics Engine</strong></span>
+        </div>
+        <div class="no-print">
+          <button onclick="closeExecutiveReportModal()" class="px-5 py-2 text-xs font-semibold bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg text-slate-700 dark:text-slate-200 transition">
+            Tutup Pratinjau
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ide 3: Workspace PIN Lock Overlay Gate (Client-Side Security for Vercel Public URL) -->
+  <div id="modal-pin-gate" class="fixed inset-0 bg-slate-950/95 hidden z-[100] flex items-center justify-center p-4 backdrop-blur-md">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-6 shadow-2xl text-center space-y-5 animate-fade-in">
+      <div class="w-14 h-14 rounded-2xl bg-blue-600/20 border border-blue-500/40 text-blue-400 flex items-center justify-center mx-auto text-2xl shadow-inner">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Protected Workspace</span>
+        <h3 class="text-xl font-black text-white mt-2">Dework<span class="text-blue-500">Space</span> Analytics</h3>
+        <p class="text-xs text-slate-400 mt-1">Masukkan PIN Tim untuk membuka akses data Multi-Brand (RAPAtech &amp; MONTRA).</p>
+      </div>
+      <form onsubmit="event.preventDefault(); verifyWorkspacePinInput();" class="space-y-3">
+        <input type="password" id="pin-gate-input" placeholder="Masukkan PIN..." autocomplete="current-password" class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 rounded-xl px-4 py-3 text-center text-lg font-mono font-black tracking-widest text-white outline-none focus:ring-2 focus:ring-blue-500/50">
+        <p id="pin-gate-error" class="text-xs font-bold text-rose-400 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Kode PIN tidak sesuai. Silakan coba lagi.</p>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs uppercase tracking-wider py-3 rounded-xl shadow-lg transition cursor-pointer flex items-center justify-center gap-2">
+          <i class="fa-solid fa-unlock-keyhole"></i> Buka Dashboard
+        </button>
+      </form>
+      <p class="text-[10px] text-slate-500">Pengaturan PIN dapat diubah melalui menu <strong>Edit Brand (⚙️)</strong> di pojok kiri atas.</p>
+    </div>
+  </div>
+
+  <script src="./js/app.js"></script>
+</body>
+</html>
