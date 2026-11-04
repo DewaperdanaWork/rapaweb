@@ -1,0 +1,440 @@
+{
+  "meta": {
+    "app": "Dework Space - Multi-Brand Content Analytics & Team Hub",
+    "exportedAt": "2026-11-04T10:24:26.881Z",
+    "activeBrandId": "brand_1",
+    "multiBrandVersion": 4,
+    "isCloudSeed": true
+  },
+  "brandsStore": {
+    "brand_1": {
+      "meta": {
+        "id": "brand_1",
+        "name": "RAPAtech",
+        "handle": "@rapa_indonesia",
+        "color": "blue"
+      },
+      "pillars": [
+        {
+          "id": "Charger",
+          "name": "Charger",
+          "badge": "🔌 Charger",
+          "icon": "fa-bolt",
+          "color": "blue",
+          "keywords": [
+            "charger",
+            "#chargeriphone",
+            "#chargermfi",
+            "mfi",
+            "avs",
+            "gan",
+            "zen pro",
+            "power zen",
+            "power ion",
+            "power ii",
+            "power mini",
+            "loop gan",
+            "adaptor",
+            "adapter",
+            "ngecas",
+            "dicas",
+            "cas iphone",
+            "bh bakal awet",
+            "bh awet",
+            "aman buat bh",
+            "battery health",
+            "kabel",
+            "cable",
+            "line +",
+            "line ii",
+            "line flash",
+            "fast charging",
+            "fastcharging",
+            "quick charging",
+            "watt",
+            "30w",
+            "35w",
+            "45w",
+            "60w"
+          ]
+        },
+        {
+          "id": "Power Bank",
+          "name": "Power Bank",
+          "badge": "🔋 Power Bank",
+          "icon": "fa-battery-three-quarters",
+          "color": "emerald",
+          "keywords": [
+            "powerbank",
+            "power bank",
+            "pb",
+            "origin loop",
+            "origin on",
+            "origin link",
+            "origin max",
+            "origin pro",
+            "qi2",
+            "5000mah",
+            "5.000mah",
+            "5000 mah",
+            "10000mah",
+            "10.000mah",
+            "10.000 mah",
+            "10000 mah",
+            "20000mah",
+            "20.000mah",
+            "20.000 mah",
+            "20000 mah",
+            "kapasitas gede",
+            "magsafe",
+            "wireless"
+          ]
+        },
+        {
+          "id": "Case",
+          "name": "Case",
+          "badge": "📱 Case",
+          "icon": "fa-shield-halved",
+          "color": "cyan",
+          "keywords": [
+            "case",
+            "casing",
+            "clear case",
+            "clearcase",
+            "iphonecase",
+            "aero case",
+            "ice clear",
+            "glacier",
+            "yellowing",
+            "nguning",
+            "airbag"
+          ]
+        },
+        {
+          "id": "Tempered Glass",
+          "name": "Tempered Glass",
+          "badge": "🛡️ Tempered Glass",
+          "icon": "fa-mobile-screen",
+          "color": "purple",
+          "keywords": [
+            "tempered",
+            "temperedglass",
+            "tg",
+            "anti reflection",
+            "anti-reflection",
+            "ar",
+            "anti spy",
+            "antispy",
+            "anti intip",
+            "antiintip",
+            "screen protector",
+            "screen guard",
+            "easy fit",
+            "instant fit",
+            "upgrade layar",
+            "layar baret",
+            "pelindung layar"
+          ]
+        },
+        {
+          "id": "Promo/Live",
+          "name": "Promo/Live",
+          "badge": "🔴 Promo/Live",
+          "icon": "fa-bullhorn",
+          "color": "rose",
+          "keywords": [
+            "promolive",
+            "tiktoklive",
+            "ikut live",
+            "join live",
+            "live malam",
+            "live nanti",
+            "live rapatech",
+            "payday sale",
+            "big sale",
+            "flash sale",
+            "live",
+            "promo",
+            "deal",
+            "diskon",
+            "guncang",
+            "payday",
+            "bundling"
+          ]
+        }
+      ],
+      "db": {
+        "todos": [],
+        "contents": [],
+        "daily": {},
+        "videoList": [],
+        "salesVideos": [],
+        "globalTimeStats": {},
+        "lockedMonths": {},
+        "teamRoster": [
+          {
+            "id": "tm_alex",
+            "name": "Alex",
+            "role": "Talent / Creator",
+            "color": "blue",
+            "icon": "fa-user-tie",
+            "monthlyQuota": 15
+          },
+          {
+            "id": "tm_sarah",
+            "name": "Sarah",
+            "role": "Scriptwriter",
+            "color": "purple",
+            "icon": "fa-pen-fancy",
+            "monthlyQuota": 20
+          },
+          {
+            "id": "tm_rian",
+            "name": "Rian",
+            "role": "Video Editor",
+            "color": "emerald",
+            "icon": "fa-film",
+            "monthlyQuota": 20
+          },
+          {
+            "id": "tm_budi",
+            "name": "Budi",
+            "role": "Host Live",
+            "color": "amber",
+            "icon": "fa-headset",
+            "monthlyQuota": 12
+          },
+          {
+            "id": "tm_all",
+            "name": "Team",
+            "role": "All Crew",
+            "color": "cyan",
+            "icon": "fa-users",
+            "monthlyQuota": 30
+          }
+        ],
+        "teamMembers": [
+          "Alex (Talent / Creator)",
+          "Sarah (Scriptwriter)",
+          "Rian (Video Editor)",
+          "Budi (Host Live)",
+          "Team (All Crew)"
+        ]
+      },
+      "kpiTargets": {
+        "gmv": 0,
+        "views": 0,
+        "followers": 0,
+        "ctr": 0
+      },
+      "uploadLabels": {
+        "filename-overview": "Upload Data Overview",
+        "filename-audience": "Upload Data Audience",
+        "filename-video": "Upload Data Video Performance",
+        "filename-product": "Upload Video Performance List (.xlsx / .csv)",
+        "filename-vc-summary": "Upload File Video &amp; Carousel Summary (.xlsx / .xls / .csv)"
+      }
+    },
+    "brand_2": {
+      "meta": {
+        "id": "brand_2",
+        "name": "MONTRA",
+        "handle": "@montra_id",
+        "color": "emerald"
+      },
+      "pillars": [
+        {
+          "id": "Casing Clear",
+          "name": "Casing Clear",
+          "badge": "✨ Casing Clear",
+          "icon": "fa-gem",
+          "color": "cyan",
+          "keywords": [
+            "casing clear",
+            "clear case",
+            "clearcase",
+            "crystal",
+            "transparan",
+            "anti yellowing",
+            "anti-yellowing",
+            "anti nguning",
+            "anti kuning",
+            "nguning",
+            "bening",
+            "ice clear",
+            "clear"
+          ]
+        },
+        {
+          "id": "Casing Leather",
+          "name": "Casing Leather",
+          "badge": "👜 Casing Leather",
+          "icon": "fa-briefcase",
+          "color": "amber",
+          "keywords": [
+            "casing leather",
+            "leather case",
+            "leathercase",
+            "leather",
+            "kulit",
+            "vegan leather",
+            "magnetic leather",
+            "classic leather",
+            "dompet",
+            "wallet",
+            "textured"
+          ]
+        },
+        {
+          "id": "Casing Orbit",
+          "name": "Casing Orbit",
+          "badge": "🪐 Casing Orbit",
+          "icon": "fa-circle-dot",
+          "color": "indigo",
+          "keywords": [
+            "casing orbit",
+            "orbit case",
+            "orbitcase",
+            "orbit",
+            "o-ring",
+            "ring stand",
+            "magsafe stand",
+            "rotating",
+            "kickstand",
+            "360",
+            "putar",
+            "stand"
+          ]
+        },
+        {
+          "id": "Tempered Glass",
+          "name": "Tempered Glass",
+          "badge": "🛡️ Tempered Glass",
+          "icon": "fa-mobile-screen",
+          "color": "purple",
+          "keywords": [
+            "tempered",
+            "temperedglass",
+            "tg",
+            "screen protector",
+            "privacy",
+            "anti spy",
+            "antispy",
+            "anti intip",
+            "antiintip",
+            "anti glare",
+            "matte",
+            "corning",
+            "dustfree",
+            "kaca",
+            "screen guard",
+            "upgrade layar",
+            "layar baret",
+            "pelindung layar"
+          ]
+        },
+        {
+          "id": "Promo/Live",
+          "name": "Promo/Live",
+          "badge": "🔴 Promo/Live",
+          "icon": "fa-bullhorn",
+          "color": "rose",
+          "keywords": [
+            "promolive",
+            "tiktoklive",
+            "ikut live",
+            "join live",
+            "live malam",
+            "live nanti",
+            "live montra",
+            "payday sale",
+            "big sale",
+            "flash sale",
+            "bundling",
+            "live",
+            "promo",
+            "diskon",
+            "guncang",
+            "payday",
+            "deal"
+          ]
+        }
+      ],
+      "db": {
+        "todos": [],
+        "contents": [],
+        "daily": {},
+        "videoList": [],
+        "salesVideos": [],
+        "globalTimeStats": {},
+        "lockedMonths": {},
+        "teamRoster": [
+          {
+            "id": "tm_alex",
+            "name": "Alex",
+            "role": "Talent / Creator",
+            "color": "blue",
+            "icon": "fa-user-tie",
+            "monthlyQuota": 15
+          },
+          {
+            "id": "tm_sarah",
+            "name": "Sarah",
+            "role": "Scriptwriter",
+            "color": "purple",
+            "icon": "fa-pen-fancy",
+            "monthlyQuota": 20
+          },
+          {
+            "id": "tm_rian",
+            "name": "Rian",
+            "role": "Video Editor",
+            "color": "emerald",
+            "icon": "fa-film",
+            "monthlyQuota": 20
+          },
+          {
+            "id": "tm_budi",
+            "name": "Budi",
+            "role": "Host Live",
+            "color": "amber",
+            "icon": "fa-headset",
+            "monthlyQuota": 12
+          },
+          {
+            "id": "tm_all",
+            "name": "Team",
+            "role": "All Crew",
+            "color": "cyan",
+            "icon": "fa-users",
+            "monthlyQuota": 30
+          }
+        ],
+        "teamMembers": [
+          "Alex (Talent / Creator)",
+          "Sarah (Scriptwriter)",
+          "Rian (Video Editor)",
+          "Budi (Host Live)",
+          "Team (All Crew)"
+        ]
+      },
+      "kpiTargets": {
+        "gmv": 0,
+        "views": 0,
+        "followers": 0,
+        "ctr": 0
+      },
+      "uploadLabels": {
+        "filename-overview": "Upload Data Overview",
+        "filename-audience": "Upload Data Audience",
+        "filename-video": "Upload Data Video Performance",
+        "filename-product": "Upload Video Performance List (.xlsx / .csv)",
+        "filename-vc-summary": "Upload File Video & Carousel Summary (.xlsx / .xls / .csv)"
+      }
+    },
+    "security": {
+      "enabled": true,
+      "pin": "2026"
+    }
+  }
+}
